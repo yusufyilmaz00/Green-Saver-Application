@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, 
-    QFormLayout, QLineEdit, QHBoxLayout, QMessageBox
+    QFormLayout, QLineEdit, QHBoxLayout, QMessageBox ,QComboBox, QDialog, QDateEdit
 )
+from PyQt5.QtCore import QDate
 from database import DatabaseManager
 from datetime import datetime
 
@@ -357,8 +358,8 @@ class MainAppWindow(QWidget):
         layout.addWidget(welcome_label)
 
         # Diğer butonlar
-        self.button1 = QPushButton("Process 1")
-        self.button1.clicked.connect(self.process_1)
+        self.button1 = QPushButton("Add Invoice")
+        self.button1.clicked.connect(self.insert_invoice)
 
         self.button2 = QPushButton("Process 2")
         self.button2.clicked.connect(self.process_2)
@@ -372,8 +373,10 @@ class MainAppWindow(QWidget):
 
         self.setLayout(layout)
 
-    def process_1(self):
-        QMessageBox.information(self, "Process 1", "Process 1 executed!")
+    def insert_invoice(self):
+        dialog = InvoiceDialog()
+        if dialog.exec_():
+            print("Invoice details saved successfully.")
 
     def process_2(self):
         QMessageBox.information(self, "Process 2", "Process 2 executed!")
@@ -381,3 +384,67 @@ class MainAppWindow(QWidget):
     def logout(self):
         QMessageBox.information(self, "Logout", "You have been logged out.")
         self.close()
+
+
+class InvoiceDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Invoice Insert")
+        self.setGeometry(100, 100, 300, 200)
+
+        # Create layout
+        layout = QVBoxLayout()
+
+        # Invoice Date
+        self.date_label = QLabel("Invoice Date:")
+        self.date_edit = QDateEdit()
+        self.date_edit.setCalendarPopup(True)
+        self.date_edit.setDate(QDate.currentDate())
+
+        # Invoice Type
+        self.type_label = QLabel("Invoice Type:")
+        self.type_combo = QComboBox()
+        self.type_combo.addItems(["Electricity", "Water", "Natural Gas"])
+
+        # Consumption Amount
+        self.amount_label = QLabel("Consumption Amount:")
+        self.amount_input = QLineEdit()
+        self.amount_input.setPlaceholderText("Enter amount")
+
+        # Buttons
+        self.save_button = QPushButton("Save")
+        self.cancel_button = QPushButton("Cancel")
+        self.save_button.clicked.connect(self.save_invoice)
+        self.cancel_button.clicked.connect(self.reject)
+
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(self.save_button)
+        button_layout.addWidget(self.cancel_button)
+
+        # Add widgets to layout
+        layout.addWidget(self.date_label)
+        layout.addWidget(self.date_edit)
+        layout.addWidget(self.type_label)
+        layout.addWidget(self.type_combo)
+        layout.addWidget(self.amount_label)
+        layout.addWidget(self.amount_input)
+        layout.addLayout(button_layout)
+
+        self.setLayout(layout)
+
+    def save_invoice(self):
+        date = self.date_edit.date().toString("yyyy-MM-dd")
+        invoice_type = self.type_combo.currentText()
+        amount = self.amount_input.text()
+
+        if not amount:
+            QMessageBox.warning(self, "Input Error", "Please enter the consumption amount.")
+            return
+
+        try:
+            amount = float(amount)
+            QMessageBox.information(
+                self, "Invoice Saved", f"Invoice details:\nDate: {date}\nType: {invoice_type}\nAmount: {amount}")
+            self.accept()
+        except ValueError:
+            QMessageBox.warning(self, "Input Error", "Consumption amount must be a valid number.")
