@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, 
     QFormLayout, QLineEdit, QHBoxLayout, QMessageBox
 )
-
+from database import *
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -61,10 +61,10 @@ class LoginWindow(QWidget):
         # Input fields
         self.subscription_no_input = QLineEdit()
         self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Normal)  # Şifre gösterimi aktif
+        self.password_input.setEchoMode(QLineEdit.Normal)  # Şifre gösterimi
 
         # Add fields to form layout
-        form_layout.addRow("Subscription No:", self.subscription_no_input)
+        form_layout.addRow("Subscriber Number:", self.subscription_no_input)
         form_layout.addRow("Password:", self.password_input)
 
         # Buttons
@@ -85,15 +85,20 @@ class LoginWindow(QWidget):
         self.setLayout(main_layout)
 
     def login(self):
-        # Get input data
+        # Kullanıcı girişlerini al
         subscription_no = self.subscription_no_input.text()
         password = self.password_input.text()
 
-        # Dummy login logic
-        if subscription_no and password:
-            QMessageBox.information(self, "Login Successful", f"Welcome, {subscription_no} !")
+        # Veri tabanında kontrol et
+        valid, message = validate_login(subscription_no, password)
+
+        # Sonuçlara göre mesaj göster
+        if valid:
+            QMessageBox.information(self, "Login Successful", message)
+            self.close()  # Pencereyi kapat
+            # Giriş başarılı olduğunda ana menüye geçiş yapılabilir
         else:
-            QMessageBox.warning(self, "Login Failed", "Please enter valid credentials!")
+            QMessageBox.warning(self, "Login Failed", message)
 
     def close_window(self):
         self.close()
