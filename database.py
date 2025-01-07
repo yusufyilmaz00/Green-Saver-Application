@@ -75,3 +75,26 @@ class DatabaseManager:
             return False, f"An error occurred: {e}"
         finally:
             self.close_connection()
+
+    def insert_individual_subscriber(self, fname, lname, password, id_number, birthday, address, email, phone_number):
+        conn = self.create_connection()
+        if not conn:
+            return False, "Database connection failed!"
+
+        try:
+            cursor = conn.cursor()
+
+            # Güncellenmiş SQL fonksiyonunu çağırma
+            query = """
+                SELECT insert_individual_subscriber(
+                    %s, %s, %s, %s, CURRENT_DATE, %s, %s, %s, %s
+                );
+            """
+            cursor.execute(query, (fname, lname, id_number, birthday, address, email, phone_number, password))
+            conn.commit()
+            return True, "Individual subscriber registered successfully!"
+        except Exception as e:
+            conn.rollback()
+            return False, f"An error occurred: {e}"
+        finally:
+            self.close_connection()
