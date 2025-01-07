@@ -36,7 +36,7 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
 
     def open_login_window(self):
-        self.login_window = SubWindow("Login Window")
+        self.login_window = LoginWindow()
         self.login_window.show()
 
     def open_corporate_window(self):
@@ -48,17 +48,55 @@ class MainWindow(QMainWindow):
         self.register_individual_window.show()
 
 
-class SubWindow(QWidget):
-    def __init__(self, title):
+class LoginWindow(QWidget):
+    def __init__(self):
         super().__init__()
 
-        self.setWindowTitle(title)
-        self.setGeometry(200, 200, 300, 200)
+        self.setWindowTitle("Login")
+        self.setGeometry(200, 200, 400, 300)
 
-        layout = QVBoxLayout()
-        label = QLabel(f"This window is: {title}")
-        layout.addWidget(label)
-        self.setLayout(layout)
+        # Form layout for user input
+        form_layout = QFormLayout()
+
+        # Input fields
+        self.subscription_no_input = QLineEdit()
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Normal)  # Şifre gösterimi aktif
+
+        # Add fields to form layout
+        form_layout.addRow("Subscription No:", self.subscription_no_input)
+        form_layout.addRow("Password:", self.password_input)
+
+        # Buttons
+        button_layout = QHBoxLayout()
+        self.login_button = QPushButton("Login")
+        self.login_button.clicked.connect(self.login)
+
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.close_window)
+
+        button_layout.addWidget(self.login_button)
+        button_layout.addWidget(self.cancel_button)
+
+        # Main layout
+        main_layout = QVBoxLayout()
+        main_layout.addLayout(form_layout)
+        main_layout.addLayout(button_layout)
+        self.setLayout(main_layout)
+
+    def login(self):
+        # Get input data
+        subscription_no = self.subscription_no_input.text()
+        password = self.password_input.text()
+
+        # Dummy login logic
+        if subscription_no and password:
+            QMessageBox.information(self, "Login Successful", f"Welcome, {subscription_no} !")
+        else:
+            QMessageBox.warning(self, "Login Failed", "Please enter valid credentials!")
+
+    def close_window(self):
+        self.close()
 
 
 class IndividualWindow(QWidget):
@@ -123,7 +161,7 @@ class IndividualWindow(QWidget):
         }
 
         # Display a confirmation message
-        QMessageBox.information(self, "Data Saved", f"Data has been saved:\n")
+        QMessageBox.information(self, "Data Saved", f"Data has been saved:\n{data}")
 
     def close_window(self):
         self.close()
@@ -194,7 +232,7 @@ class CorporateWindow(QWidget):
         }
 
         # Display a confirmation message
-        QMessageBox.information(self, "Data Saved", f"Data has been saved:\n")
+        QMessageBox.information(self, "Data Saved", f"Data has been saved:\n{data}")
 
     def close_window(self):
         self.close()
