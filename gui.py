@@ -170,17 +170,22 @@ class IndividualWindow(QWidget):
 
         # DatabaseManager ile veritabanına kaydet
         db_manager = DatabaseManager()
-        success, message = db_manager.insert_individual_subscriber(
+        success, message, subscription_no = db_manager.insert_individual_subscriber(
             fname, lname, password, id_number, birthdate, address, email, phone_number
         )
+
         if success:
-            QMessageBox.information(self, "Success", message)
+            QMessageBox.information(
+                self,
+                "Success",
+                f"{message}\nYour subscription number is: {subscription_no}"
+            )
             self.close()
         else:
             QMessageBox.warning(self, "Error", message)
 
     def validate_input(self, fname, lname, password, id_number, birthdate, address, email, phone_number):
-        # Alanların boş olmadığını kontrol et
+        # Alanların doluluğunu kontrol et
         if not all([fname, lname, password, id_number, birthdate, address, email, phone_number]):
             QMessageBox.warning(self, "Input Error", "All fields must be filled!")
             return False
