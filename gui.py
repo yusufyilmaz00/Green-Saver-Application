@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import (
     QFormLayout, QLineEdit, QHBoxLayout, QMessageBox
 )
 from database import DatabaseManager
+from datetime import datetime
 
 #Ana pencereyi yönetir ve diğer pencerelere geçiş sağlar.
 class MainWindow(QMainWindow):
@@ -154,10 +155,117 @@ class IndividualWindow(QWidget):
         self.setLayout(main_layout)
 
     def save_data(self):
+        # Alınan verileri doğrula
+        fname = self.firstname_input.text()
+        lname = self.lastname_input.text()
+        password = self.password_input.text()
+        id_number = self.id_number_input.text()
+        birthdate = self.birthdate_input.text()
+        address = self.address_input.text()
+        email = self.email_input.text()
+        phone_number = self.phone_input.text()
+
+        if not self.validate_input(fname, lname, password, id_number, birthdate, address, email, phone_number):
+            return
+
+        # DatabaseManager ile veritabanına kaydet
+        db_manager = DatabaseManager()
+        success, message = db_manager.insert_individual_subscriber(
+            fname, lname, password, id_number, birthdate, address, email, phone_number
+        )
+        if success:
+            QMessageBox.information(self, "Success", message)
+            self.close()
+        else:
+            QMessageBox.warning(self, "Error", message)
+
+    def validate_input(self, fname, lname, password, id_number, birthdate, address, email, phone_number):
+        # Alanların boş olmadığını kontrol et
+        if not all([fname, lname, password, id_number, birthdate, address, email, phone_number]):
+            QMessageBox.warning(self, "Input Error", "All fields must be filled!")
+            return False
+
+        # Uzunluk kontrolleri
+        if len(fname) > 30 or len(lname) > 30 or len(password) > 20:
+            QMessageBox.warning(self, "Input Error", "Name, password lengths are invalid!")
+            return False
+        if len(id_number) != 11 or not id_number.isdigit():
+            QMessageBox.warning(self, "Input Error", "ID Number must be 11 digits!")
+            return False
+        if len(phone_number) != 10 or not phone_number.isdigit():
+            QMessageBox.warning(self, "Input Error", "Phone Number must be 10 digits!")
+            return False
+        if len(address) > 100 or len(email) > 50:
+            QMessageBox.warning(self, "Input Error", "Address or email exceeds length limit!")
+            return False
+
+        # Tarih formatı kontrolü
+        try:
+            datetime.strptime(birthdate, "%Y-%m-%d")
+        except ValueError:
+            QMessageBox.warning(self, "Input Error", "Invalid birthdate format! Use YYYY-MM-DD.")
+            return False
+
+        return True
+
+    def close_window(self):
+        self.close()
+
+"""
+class IndividualWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Individual Subscription")
+        self.setGeometry(200, 200, 400, 500)
+
+        # Form layout for user input
+        form_layout = QFormLayout()
+
+        # Input fields
+        self.firstname_input = QLineEdit()
+        self.lastname_input = QLineEdit()
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Password)
+        self.id_number_input = QLineEdit()
+        self.birthdate_input = QLineEdit()
+        self.address_input = QLineEdit()
+        self.email_input = QLineEdit()
+        self.phone_input = QLineEdit()
+
+        # Add fields to form layout
+        form_layout.addRow("First Name:", self.firstname_input)
+        form_layout.addRow("Last Name:", self.lastname_input)
+        form_layout.addRow("Password:", self.password_input)
+        form_layout.addRow("ID Number:", self.id_number_input)
+        form_layout.addRow("Birthdate (YYYY-MM-DD):", self.birthdate_input)
+        form_layout.addRow("Address:", self.address_input)
+        form_layout.addRow("Email:", self.email_input)
+        form_layout.addRow("Phone Number:", self.phone_input)
+
+        # Buttons
+        button_layout = QHBoxLayout()
+        self.save_button = QPushButton("Save")
+        self.save_button.clicked.connect(self.save_data)
+
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.close_window)
+
+        button_layout.addWidget(self.save_button)
+        button_layout.addWidget(self.cancel_button)
+
+        # Main layout
+        main_layout = QVBoxLayout()
+        main_layout.addLayout(form_layout)
+        main_layout.addLayout(button_layout)
+        self.setLayout(main_layout)
+
+    def save_data(self):
         QMessageBox.information(self, "Data Saved", "Individual subscription data saved!")
 
     def close_window(self):
         self.close()
+"""
 
 #Kurumsal abonelik kayıt ekranı.
 class CorporateWindow(QWidget):
