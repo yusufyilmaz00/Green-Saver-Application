@@ -101,9 +101,20 @@ class LoginWindow(QWidget):
     def open_main_app(self, subscription_no):
         db_manager = DatabaseManager()
         user_info = db_manager.get_user_info(subscription_no)
-        self.main_app = MainAppWindow(user_info)
+
+        if not user_info:
+            QMessageBox.critical(self, "Error", "User information could not be retrieved. Please check the subscription number.")
+            return
+
+        subscriber_type = db_manager.get_subscriber_type(subscription_no)
+        if not subscriber_type:
+            QMessageBox.critical(self, "Error", "Subscriber type could not be determined. Please contact support.")
+            return
+
+        self.main_app = MainAppWindow(user_info, subscription_no, subscriber_type, db_manager)
         self.main_app.show()
         self.close()
+
 
     def close_window(self):
         self.close()
@@ -344,8 +355,12 @@ class CorporateWindow(QWidget):
 # Kullanıcının giriş yaptıktan sonra ulaşabileceği ana uygulama ekranı.
 class MainAppWindow(QWidget):
 
-    def __init__(self, user_info):
+    def __init__(self, user_info, subscription_no, subscriber_type, db_manager):
         super().__init__()
+
+        self.subscription_no = subscription_no
+        self.subscriber_type = subscriber_type
+        self.db_manager = db_manager
 
         self.setWindowTitle("Main Application")
         self.setGeometry(200, 200, 600, 400)
@@ -358,7 +373,7 @@ class MainAppWindow(QWidget):
         layout.addWidget(welcome_label)
 
         # Diğer butonlar
-        self.button1 = QPushButton("Add Invoice")
+        self.button1 = QPushButton("Insert Invoice")
         self.button1.clicked.connect(self.insert_invoice)
 
         self.button2 = QPushButton("Process 2")
@@ -374,7 +389,7 @@ class MainAppWindow(QWidget):
         self.setLayout(layout)
 
     def insert_invoice(self):
-        dialog = InvoiceDialog()
+        dialog = InvoiceDialog(self.db_manager, self.subscription_no, self.subscriber_type)
         if dialog.exec_():
             print("Invoice details saved successfully.")
 
@@ -387,8 +402,12 @@ class MainAppWindow(QWidget):
 
 
 class InvoiceDialog(QDialog):
-    def __init__(self):
+    def __init__(self, db_manager, subscription_no, subscriber_type):
         super().__init__()
+        self.db_manager = db_manager
+        self.subscription_no = subscription_no
+        self.subscriber_type = subscriber_type
+
         self.setWindowTitle("Invoice Insert")
         self.setGeometry(100, 100, 300, 200)
 
@@ -400,6 +419,7 @@ class InvoiceDialog(QDialog):
         self.date_edit = QDateEdit()
         self.date_edit.setCalendarPopup(True)
         self.date_edit.setDate(QDate.currentDate())
+        self.date_edit.setMaximumDate(QDate.currentDate())  # Tarih kısıtlaması
 
         # Invoice Type
         self.type_label = QLabel("Invoice Type:")
@@ -443,8 +463,16 @@ class InvoiceDialog(QDialog):
 
         try:
             amount = float(amount)
-            QMessageBox.information(
-                self, "Invoice Saved", f"Invoice details:\nDate: {date}\nType: {invoice_type}\nAmount: {amount}")
-            self.accept()
+            if amount <= 0:
+                QMessageBox.warning(self, "Input Error", "Consumption amount must be a positive number.")
+                return
+
+            # Faturayı veritabanına ekle
+            success, message = self.db_manager.insert_invoice(date, self.subscription_no, invoice_type, amount, self.subscriber_type)
+            if success:
+                QMessageBox.information(self, "Invoice Saved", message)
+                self.accept()
+            else:
+                QMessageBox.critical(self, "Error", message)
         except ValueError:
             QMessageBox.warning(self, "Input Error", "Consumption amount must be a valid number.")
