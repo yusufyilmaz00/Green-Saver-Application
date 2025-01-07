@@ -3,7 +3,6 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, 
     QFormLayout, QLineEdit, QHBoxLayout, QMessageBox
 )
-from PyQt5.QtCore import QDate
 
 
 class MainWindow(QMainWindow):
@@ -76,7 +75,7 @@ class IndividualWindow(QWidget):
         self.firstname_input = QLineEdit()
         self.lastname_input = QLineEdit()
         self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Password)
+        self.password_input.setEchoMode(QLineEdit.Normal)  # Şifre gösterimi aktif
         self.id_number_input = QLineEdit()
         self.birthdate_input = QLineEdit()
         self.address_input = QLineEdit()
@@ -124,7 +123,7 @@ class IndividualWindow(QWidget):
         }
 
         # Display a confirmation message
-        QMessageBox.information(self, "Data Saved", f"Data has been saved:\n{data}")
+        QMessageBox.information(self, "Data Saved", f"Data has been saved:\n")
 
     def close_window(self):
         self.close()
@@ -143,7 +142,7 @@ class CorporateWindow(QWidget):
         # Input fields
         self.corporate_name_input = QLineEdit()
         self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Password)
+        self.password_input.setEchoMode(QLineEdit.Normal)  # Şifre gösterimi aktif
         self.tax_no_input = QLineEdit()
         self.corporate_type_input = QLineEdit()
         self.foundation_date_input = QLineEdit()
