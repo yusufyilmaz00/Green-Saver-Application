@@ -98,3 +98,26 @@ class DatabaseManager:
             return False, f"An error occurred: {e}"
         finally:
             self.close_connection()
+
+    def insert_corporate_subscriber(self, corporate_name, tax_no, corporate_type, foundation_date, address, email, phone_number, password):
+        conn = self.create_connection()
+        if not conn:
+            return False, "Database connection failed!"
+
+        try:
+            cursor = conn.cursor()
+
+            # SQL fonksiyonunu çağırma
+            query = """
+                SELECT insert_corporate_subscriber(
+                    %s, %s, %s, %s, CURRENT_DATE, %s, %s, %s, %s
+                );
+            """
+            cursor.execute(query, (corporate_name, tax_no, corporate_type, foundation_date, address, email, phone_number, password))
+            conn.commit()
+            return True, "Corporate subscriber registered successfully!"
+        except Exception as e:
+            conn.rollback()
+            return False, f"An error occurred: {e}"
+        finally:
+            self.close_connection()
