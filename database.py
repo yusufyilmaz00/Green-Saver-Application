@@ -79,23 +79,24 @@ class DatabaseManager:
     def insert_individual_subscriber(self, fname, lname, password, id_number, birthday, address, email, phone_number):
         conn = self.create_connection()
         if not conn:
-            return False, "Database connection failed!"
+            return False, "Database connection failed!", None
 
         try:
             cursor = conn.cursor()
 
-            # Güncellenmiş SQL fonksiyonunu çağırma
+            # SQL fonksiyonunu çağır ve abone numarasını al
             query = """
                 SELECT insert_individual_subscriber(
                     %s, %s, %s, %s, CURRENT_DATE, %s, %s, %s, %s
                 );
             """
             cursor.execute(query, (fname, lname, id_number, birthday, address, email, phone_number, password))
+            sub_no = cursor.fetchone()[0]  # SQL fonksiyonundan dönen abone numarası
             conn.commit()
-            return True, "Individual subscriber registered successfully!"
+            return True, "Individual subscriber registered successfully!", sub_no
         except Exception as e:
             conn.rollback()
-            return False, f"An error occurred: {e}"
+            return False, f"An error occurred: {e}", None
         finally:
             self.close_connection()
 
