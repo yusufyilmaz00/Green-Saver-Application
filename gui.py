@@ -211,62 +211,6 @@ class IndividualWindow(QWidget):
     def close_window(self):
         self.close()
 
-"""
-class IndividualWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-
-        self.setWindowTitle("Individual Subscription")
-        self.setGeometry(200, 200, 400, 500)
-
-        # Form layout for user input
-        form_layout = QFormLayout()
-
-        # Input fields
-        self.firstname_input = QLineEdit()
-        self.lastname_input = QLineEdit()
-        self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Password)
-        self.id_number_input = QLineEdit()
-        self.birthdate_input = QLineEdit()
-        self.address_input = QLineEdit()
-        self.email_input = QLineEdit()
-        self.phone_input = QLineEdit()
-
-        # Add fields to form layout
-        form_layout.addRow("First Name:", self.firstname_input)
-        form_layout.addRow("Last Name:", self.lastname_input)
-        form_layout.addRow("Password:", self.password_input)
-        form_layout.addRow("ID Number:", self.id_number_input)
-        form_layout.addRow("Birthdate (YYYY-MM-DD):", self.birthdate_input)
-        form_layout.addRow("Address:", self.address_input)
-        form_layout.addRow("Email:", self.email_input)
-        form_layout.addRow("Phone Number:", self.phone_input)
-
-        # Buttons
-        button_layout = QHBoxLayout()
-        self.save_button = QPushButton("Save")
-        self.save_button.clicked.connect(self.save_data)
-
-        self.cancel_button = QPushButton("Cancel")
-        self.cancel_button.clicked.connect(self.close_window)
-
-        button_layout.addWidget(self.save_button)
-        button_layout.addWidget(self.cancel_button)
-
-        # Main layout
-        main_layout = QVBoxLayout()
-        main_layout.addLayout(form_layout)
-        main_layout.addLayout(button_layout)
-        self.setLayout(main_layout)
-
-    def save_data(self):
-        QMessageBox.information(self, "Data Saved", "Individual subscription data saved!")
-
-    def close_window(self):
-        self.close()
-"""
-
 #Kurumsal abonelik kayıt ekranı.
 class CorporateWindow(QWidget):
     def __init__(self):
