@@ -106,7 +106,7 @@ class DatabaseManager:
             return None
         finally:
             self.close_connection()
-    
+
     # bireysel abone ekleme fonksiyonu
     def insert_individual_subscriber(self, fname, lname, password, id_number, birthday, address, email, phone_number):
         conn = self.create_connection()
@@ -153,5 +153,79 @@ class DatabaseManager:
         except Exception as e:
             conn.rollback()
             return False, f"An error occurred: {e}", None
+        finally:
+            self.close_connection()
+
+# işlev fonksiyonları
+
+    def get_subscriber_type(self, subscription_no):
+        conn = self.create_connection()
+        if not conn:
+            return None
+
+        try:
+            cursor = conn.cursor()
+            query = "SELECT subscriberType FROM Subscriber WHERE subscriptionNo = %s;"
+            cursor.execute(query, (subscription_no,))
+            result = cursor.fetchone()
+            return result[0] if result else None
+        except Exception as e:
+            print(f"Error fetching subscriber type: {e}")
+            return None
+        finally:
+            self.close_connection()
+
+    def calculate_invoice_amount(self, invoice_type, consumption_amount, subscriber_type):
+        conn = self.create_connection()
+        if not conn:
+            return None, "Database connection failed!"
+
+        try:
+            cursor = conn.cursor()
+            query = """
+                SELECT 
+                    CASE 
+                        WHEN %s = 'C' THEN corporationPrice
+                        ELSE individualPrice
+                    END AS unit_price
+                FROM energy
+                WHERE invoiceType = %s;
+            """
+            cursor.execute(query, (subscriber_type, invoice_type))
+            result = cursor.fetchone()
+
+            if not result:
+                return None, "Unit price not found for the given invoice type."
+
+            unit_price = float(result[0])  # Birim fiyatı float'a çevirin
+            consumption_amount = float(consumption_amount)  # Tüketim miktarını float'a çevirin
+            invoice_amount = unit_price * consumption_amount  # Çarpımı gerçekleştirin
+            return invoice_amount, None
+        except Exception as e:
+            return None, f"An error occurred: {e}"
+        finally:
+            self.close_connection()
+
+
+    def insert_invoice(self, invoice_date, subscription_no, invoice_type, consumption_amount, subscriber_type):
+        invoice_amount, error = self.calculate_invoice_amount(invoice_type, consumption_amount, subscriber_type)
+        if error:
+            return False, error
+
+        conn = self.create_connection()
+        if not conn:
+            return False, "Database connection failed!"
+
+        try:
+            cursor = conn.cursor()
+            query = """
+                SELECT insert_invoice(%s, %s, %s, %s, %s);
+            """
+            cursor.execute(query, (invoice_date, subscription_no, invoice_type, consumption_amount, invoice_amount))
+            conn.commit()
+            return True, "Invoice successfully inserted!"
+        except Exception as e:
+            conn.rollback()
+            return False, f"An error occurred: {e}"
         finally:
             self.close_connection()
