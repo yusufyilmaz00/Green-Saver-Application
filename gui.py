@@ -229,7 +229,6 @@ class CorporateWindow(QWidget):
         self.tax_no_input = QLineEdit()
         self.corporate_type_input = QLineEdit()
         self.foundation_date_input = QLineEdit()
-        self.register_date_input = QLineEdit()
         self.address_input = QLineEdit()
         self.email_input = QLineEdit()
         self.phone_number_input = QLineEdit()
@@ -240,7 +239,6 @@ class CorporateWindow(QWidget):
         form_layout.addRow("Tax Number:", self.tax_no_input)
         form_layout.addRow("Corporate Type:", self.corporate_type_input)
         form_layout.addRow("Foundation Date (YYYY-MM-DD):", self.foundation_date_input)
-        form_layout.addRow("Register Date (YYYY-MM-DD):", self.register_date_input)
         form_layout.addRow("Address:", self.address_input)
         form_layout.addRow("Email:", self.email_input)
         form_layout.addRow("Phone Number:", self.phone_number_input)
@@ -263,7 +261,68 @@ class CorporateWindow(QWidget):
         self.setLayout(main_layout)
 
     def save_data(self):
-        QMessageBox.information(self, "Data Saved", "Corporate subscription data saved!")
+        # Alınan verileri doğrula
+        corporate_name = self.corporate_name_input.text()
+        password = self.password_input.text()
+        tax_no = self.tax_no_input.text()
+        corporate_type = self.corporate_type_input.text()
+        foundation_date = self.foundation_date_input.text()
+        address = self.address_input.text()
+        email = self.email_input.text()
+        phone_number = self.phone_number_input.text()
+
+        # Doğrulama
+        if not self.validate_input(corporate_name, password, tax_no, corporate_type, foundation_date, address, email, phone_number):
+            return
+
+        # Veritabanına bağlan ve veriyi kaydet
+        db_manager = DatabaseManager()
+        success, message = db_manager.insert_corporate_subscriber(
+            corporate_name, tax_no, corporate_type, foundation_date, address, email, phone_number, password
+        )
+        if success:
+            QMessageBox.information(self, "Success", message)
+            self.close()
+        else:
+            QMessageBox.warning(self, "Error", message)
+
+    def validate_input(self, corporate_name, password, tax_no, corporate_type, foundation_date, address, email, phone_number):
+        # Boş alanların kontrolü
+        if not all([corporate_name, password, tax_no, corporate_type, foundation_date, address, email, phone_number]):
+            QMessageBox.warning(self, "Input Error", "All fields must be filled!")
+            return False
+
+        # Uzunluk kontrolleri
+        if len(corporate_name) > 40:
+            QMessageBox.warning(self, "Input Error", "Corporate name must not exceed 40 characters.")
+            return False
+        if len(password) > 20:
+            QMessageBox.warning(self, "Input Error", "Password must not exceed 20 characters.")
+            return False
+        if len(tax_no) != 10 or not tax_no.isdigit():
+            QMessageBox.warning(self, "Input Error", "Tax Number must be a 10-digit number.")
+            return False
+        if len(corporate_type) > 40:
+            QMessageBox.warning(self, "Input Error", "Corporate type must not exceed 40 characters.")
+            return False
+        if len(phone_number) != 10 or not phone_number.isdigit():
+            QMessageBox.warning(self, "Input Error", "Phone Number must be a 10-digit number.")
+            return False
+        if len(address) > 100:
+            QMessageBox.warning(self, "Input Error", "Address must not exceed 100 characters.")
+            return False
+        if len(email) > 50:
+            QMessageBox.warning(self, "Input Error", "Email must not exceed 50 characters.")
+            return False
+
+        # Tarih formatı kontrolü
+        try:
+            datetime.strptime(foundation_date, "%Y-%m-%d")
+        except ValueError:
+            QMessageBox.warning(self, "Input Error", "Invalid foundation date format! Use YYYY-MM-DD.")
+            return False
+
+        return True
 
     def close_window(self):
         self.close()
