@@ -2,8 +2,9 @@ from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, 
     QFormLayout, QLineEdit, QHBoxLayout, QMessageBox
 )
-from database import *
+from database import DatabaseManager
 
+#Ana pencereyi yönetir ve diğer pencerelere geçiş sağlar.
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -46,7 +47,7 @@ class MainWindow(QMainWindow):
         self.register_individual_window = IndividualWindow()
         self.register_individual_window.show()
 
-
+#Kullanıcı giriş ekranı.
 class LoginWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -60,7 +61,7 @@ class LoginWindow(QWidget):
         # Input fields
         self.subscription_no_input = QLineEdit()
         self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Normal)  # Şifre gösterimi
+        self.password_input.setEchoMode(QLineEdit.Password)
 
         # Add fields to form layout
         form_layout.addRow("Subscriber Number:", self.subscription_no_input)
@@ -84,64 +85,26 @@ class LoginWindow(QWidget):
         self.setLayout(main_layout)
 
     def login(self):
-        # Kullanıcı girişlerini al
         subscription_no = self.subscription_no_input.text()
         password = self.password_input.text()
+        db_manager = DatabaseManager()
 
-        # Veri tabanında kontrol et
-        valid, message = validate_login(subscription_no, password)
-
-        # Sonuçlara göre işlem yap
+        valid, message = db_manager.validate_login(subscription_no, password)
         if valid:
             QMessageBox.information(self, "Login Successful", message)
-            self.open_main_app()  # Ana uygulama ekranına geçiş
+            self.open_main_app()
         else:
             QMessageBox.warning(self, "Login Failed", message)
 
     def open_main_app(self):
-        # Ana uygulama ekranını aç
         self.main_app = MainAppWindow()
         self.main_app.show()
-        self.close()  # Login penceresini kapat
+        self.close()
 
     def close_window(self):
         self.close()
 
-class MainAppWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-
-        self.setWindowTitle("Main Application")
-        self.setGeometry(200, 200, 600, 400)
-
-        # Ana ekran butonları
-        layout = QVBoxLayout()
-
-        self.button1 = QPushButton("Process 1")
-        self.button1.clicked.connect(self.process_1)
-
-        self.button2 = QPushButton("Process 2")
-        self.button2.clicked.connect(self.process_2)
-
-        self.button3 = QPushButton("Logout")
-        self.button3.clicked.connect(self.logout)
-
-        layout.addWidget(self.button1)
-        layout.addWidget(self.button2)
-        layout.addWidget(self.button3)
-
-        self.setLayout(layout)
-
-    def process_1(self):
-        QMessageBox.information(self, "Process 1", "Process 1 executed!")
-
-    def process_2(self):
-        QMessageBox.information(self, "Process 2", "Process 2 executed!")
-
-    def logout(self):
-        QMessageBox.information(self, "Logout", "You have been logged out.")
-        self.close()  # Ana uygulama penceresini kapat
-
+#Bireysel abonelik kayıt ekranı.
 class IndividualWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -156,7 +119,7 @@ class IndividualWindow(QWidget):
         self.firstname_input = QLineEdit()
         self.lastname_input = QLineEdit()
         self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Normal)  # Şifre gösterimi aktif
+        self.password_input.setEchoMode(QLineEdit.Password)
         self.id_number_input = QLineEdit()
         self.birthdate_input = QLineEdit()
         self.address_input = QLineEdit()
@@ -191,25 +154,12 @@ class IndividualWindow(QWidget):
         self.setLayout(main_layout)
 
     def save_data(self):
-        # Get input data
-        data = {
-            "First Name": self.firstname_input.text(),
-            "Last Name": self.lastname_input.text(),
-            "Password": self.password_input.text(),
-            "ID Number": self.id_number_input.text(),
-            "Birthdate": self.birthdate_input.text(),
-            "Address": self.address_input.text(),
-            "Email": self.email_input.text(),
-            "Phone Number": self.phone_input.text(),
-        }
-
-        # Display a confirmation message
-        QMessageBox.information(self, "Data Saved", f"Data has been saved:\n{data}")
+        QMessageBox.information(self, "Data Saved", "Individual subscription data saved!")
 
     def close_window(self):
         self.close()
 
-
+#Kurumsal abonelik kayıt ekranı.
 class CorporateWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -223,7 +173,7 @@ class CorporateWindow(QWidget):
         # Input fields
         self.corporate_name_input = QLineEdit()
         self.password_input = QLineEdit()
-        self.password_input.setEchoMode(QLineEdit.Normal)  # Şifre gösterimi aktif
+        self.password_input.setEchoMode(QLineEdit.Password)
         self.tax_no_input = QLineEdit()
         self.corporate_type_input = QLineEdit()
         self.foundation_date_input = QLineEdit()
@@ -261,21 +211,43 @@ class CorporateWindow(QWidget):
         self.setLayout(main_layout)
 
     def save_data(self):
-        # Get input data
-        data = {
-            "Corporate Name": self.corporate_name_input.text(),
-            "Password": self.password_input.text(),
-            "Tax Number": self.tax_no_input.text(),
-            "Corporate Type": self.corporate_type_input.text(),
-            "Foundation Date": self.foundation_date_input.text(),
-            "Register Date": self.register_date_input.text(),
-            "Address": self.address_input.text(),
-            "Email": self.email_input.text(),
-            "Phone Number": self.phone_number_input.text(),
-        }
-
-        # Display a confirmation message
-        QMessageBox.information(self, "Data Saved", f"Data has been saved:\n{data}")
+        QMessageBox.information(self, "Data Saved", "Corporate subscription data saved!")
 
     def close_window(self):
+        self.close()
+
+# Kullanıcının giriş yaptıktan sonra ulaşabileceği ana uygulama ekranı.
+class MainAppWindow(QWidget):
+
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Main Application")
+        self.setGeometry(200, 200, 600, 400)
+
+        layout = QVBoxLayout()
+
+        self.button1 = QPushButton("Process 1")
+        self.button1.clicked.connect(self.process_1)
+
+        self.button2 = QPushButton("Process 2")
+        self.button2.clicked.connect(self.process_2)
+
+        self.button3 = QPushButton("Logout")
+        self.button3.clicked.connect(self.logout)
+
+        layout.addWidget(self.button1)
+        layout.addWidget(self.button2)
+        layout.addWidget(self.button3)
+
+        self.setLayout(layout)
+
+    def process_1(self):
+        QMessageBox.information(self, "Process 1", "Process 1 executed!")
+
+    def process_2(self):
+        QMessageBox.information(self, "Process 2", "Process 2 executed!")
+
+    def logout(self):
+        QMessageBox.information(self, "Logout", "You have been logged out.")
         self.close()
