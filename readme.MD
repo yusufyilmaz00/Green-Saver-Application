@@ -64,7 +64,7 @@ Aşağıdaki fonksiyonlar ve tetikleyiciler projede kullanılmaktadır. Tamamlan
 ---
 
 ## **Katkıda Bulunma**
-Katkıda bulunmak isterseniz lütfen bir "Pull Request" gönderin veya [e-posta adresinizi buraya ekleyin].
+Katkılarından dolayı ekip arkadaşlarım Burakhan Saruhan ve Alihan Uludağ'a teşekkür ederim. Projemize katkıda bulunmak isterseniz lütfen bir "Pull Request" gönderin veya [e-posta adresinizi buraya ekleyin].
 
 ---
 
