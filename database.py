@@ -76,6 +76,38 @@ class DatabaseManager:
         finally:
             self.close_connection()
 
+    # kullanıcı ismini alan fonksiyon
+    def get_user_info(self, subscription_no):
+        conn = self.create_connection()
+        if not conn:
+            return None
+
+        try:
+            cursor = conn.cursor()
+
+            # Abone tipini kontrol et ve gerekli bilgiyi al
+            query = """
+                SELECT 
+                    CASE 
+                        WHEN subscriberType = 'I' THEN (SELECT fname || ' ' || lname FROM individualSubscriber WHERE subscriptionNo = %s)
+                        WHEN subscriberType = 'C' THEN (SELECT corporateName FROM corporateSubscriber WHERE subscriptionNo = %s)
+                    END AS display_name
+                FROM Subscriber
+                WHERE subscriptionNo = %s;
+            """
+            cursor.execute(query, (subscription_no, subscription_no, subscription_no))
+            result = cursor.fetchone()
+
+            if result:
+                return result[0]  # İsim veya şirket adı
+            return None
+        except Exception as e:
+            print(f"Error fetching user info: {e}")
+            return None
+        finally:
+            self.close_connection()
+    
+    # bireysel abone ekleme fonksiyonu
     def insert_individual_subscriber(self, fname, lname, password, id_number, birthday, address, email, phone_number):
         conn = self.create_connection()
         if not conn:
