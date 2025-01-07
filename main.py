@@ -92,17 +92,56 @@ class LoginWindow(QWidget):
         # Veri tabanında kontrol et
         valid, message = validate_login(subscription_no, password)
 
-        # Sonuçlara göre mesaj göster
+        # Sonuçlara göre işlem yap
         if valid:
             QMessageBox.information(self, "Login Successful", message)
-            self.close()  # Pencereyi kapat
-            # Giriş başarılı olduğunda ana menüye geçiş yapılabilir
+            self.open_main_app()  # Ana uygulama ekranına geçiş
         else:
             QMessageBox.warning(self, "Login Failed", message)
+
+    def open_main_app(self):
+        # Ana uygulama ekranını aç
+        self.main_app = MainAppWindow()
+        self.main_app.show()
+        self.close()  # Login penceresini kapat
 
     def close_window(self):
         self.close()
 
+class MainAppWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Main Application")
+        self.setGeometry(200, 200, 600, 400)
+
+        # Ana ekran butonları
+        layout = QVBoxLayout()
+
+        self.button1 = QPushButton("Process 1")
+        self.button1.clicked.connect(self.process_1)
+
+        self.button2 = QPushButton("Process 2")
+        self.button2.clicked.connect(self.process_2)
+
+        self.button3 = QPushButton("Logout")
+        self.button3.clicked.connect(self.logout)
+
+        layout.addWidget(self.button1)
+        layout.addWidget(self.button2)
+        layout.addWidget(self.button3)
+
+        self.setLayout(layout)
+
+    def process_1(self):
+        QMessageBox.information(self, "Process 1", "Process 1 executed!")
+
+    def process_2(self):
+        QMessageBox.information(self, "Process 2", "Process 2 executed!")
+
+    def logout(self):
+        QMessageBox.information(self, "Logout", "You have been logged out.")
+        self.close()  # Ana uygulama penceresini kapat
 
 class IndividualWindow(QWidget):
     def __init__(self):
