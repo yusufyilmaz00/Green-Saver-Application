@@ -277,11 +277,16 @@ class CorporateWindow(QWidget):
 
         # Veritabanına bağlan ve veriyi kaydet
         db_manager = DatabaseManager()
-        success, message = db_manager.insert_corporate_subscriber(
+        success, message, subscription_no = db_manager.insert_corporate_subscriber(
             corporate_name, tax_no, corporate_type, foundation_date, address, email, phone_number, password
         )
+
         if success:
-            QMessageBox.information(self, "Success", message)
+            QMessageBox.information(
+                self,
+                "Success",
+                f"{message}\nYour subscription number is: {subscription_no}"
+            )
             self.close()
         else:
             QMessageBox.warning(self, "Error", message)
