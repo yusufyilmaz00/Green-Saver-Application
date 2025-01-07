@@ -93,17 +93,20 @@ class LoginWindow(QWidget):
         valid, message = db_manager.validate_login(subscription_no, password)
         if valid:
             QMessageBox.information(self, "Login Successful", message)
-            self.open_main_app()
+            self.open_main_app(subscription_no)
         else:
             QMessageBox.warning(self, "Login Failed", message)
 
-    def open_main_app(self):
-        self.main_app = MainAppWindow()
+    def open_main_app(self, subscription_no):
+        db_manager = DatabaseManager()
+        user_info = db_manager.get_user_info(subscription_no)
+        self.main_app = MainAppWindow(user_info)
         self.main_app.show()
         self.close()
 
     def close_window(self):
         self.close()
+
 
 #Bireysel abonelik kayıt ekranı.
 class IndividualWindow(QWidget):
@@ -340,7 +343,7 @@ class CorporateWindow(QWidget):
 # Kullanıcının giriş yaptıktan sonra ulaşabileceği ana uygulama ekranı.
 class MainAppWindow(QWidget):
 
-    def __init__(self):
+    def __init__(self, user_info):
         super().__init__()
 
         self.setWindowTitle("Main Application")
@@ -348,6 +351,12 @@ class MainAppWindow(QWidget):
 
         layout = QVBoxLayout()
 
+        # Kullanıcı bilgisi (Hoş geldiniz mesajı)
+        welcome_label = QLabel(f"Hoşgeldiniz, {user_info}")
+        welcome_label.setStyleSheet("color: blue; font-size: 16px; font-weight: bold;")
+        layout.addWidget(welcome_label)
+
+        # Diğer butonlar
         self.button1 = QPushButton("Process 1")
         self.button1.clicked.connect(self.process_1)
 
