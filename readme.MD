@@ -57,8 +57,8 @@ Aşağıdaki fonksiyonlar ve tetikleyiciler projede kullanılmaktadır. Tamamlan
 - [X] **`calculate_carbon_emission`**: Karbon emisyonu hesaplama fonksiyonu.
 - [ ] **`all_sub_view`**: Abonelerin birleştirilmiş görünümü.
 - [X] **`trig_invoiceInsertControl`**: Abonelik kontrolü için tetikleyici fonksiyon.
-- [X] **`get_all_individualInvoices`**: Bireysel abonelerin faturalarını listeleme fonksiyonu.
-- [X] **`get_all_corporateInvoices`**: Kurumsal abonelerin faturalarını listeleme fonksiyonu.
+- [X] **`get_all_individualInvoices`**: Bireysel abonenin tüm faturalarını listeleme fonksiyonu.
+- [X] **`get_all_corporateInvoices`**: Kurumsal abonenin tüm faturalarını listeleme fonksiyonu.
 - [ ] **`get_invoice`**: Abone numarasına göre fatura bilgilerini getirme fonksiyonu.
 - [X] **`update_password`**: Kullanıcı şifresini güncelleme fonksiyonu.
 - [ ] **`delete_invoice`**: Fatura silme fonksiyonu.

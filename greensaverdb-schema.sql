@@ -273,16 +273,16 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION get_invoice(subscriberNo integer)
+CREATE OR REPLACE FUNCTION get_invoice(invoice_No integer)
 RETURNS TABLE (invoiceDate date, invoiceNo integer, subNumber integer, invoiceType varchar(15), consumptionAmount numeric, invoiceAmount numeric) AS $$
 BEGIN
-   IF EXISTS (SELECT 1 FROM subscriber WHERE subscriptionNo = subscriberNo) THEN
+   IF EXISTS (SELECT 1 FROM invoice i WHERE i.invoiceNo = invoice_No) THEN
       RETURN QUERY
       SELECT i.invoiceDate, i.invoiceNo, i.subNumber, i.invoiceType, i.consumptionAmount, i.invoiceAmount
       FROM invoice i
-      WHERE i.subNumber = subscriberNo;
+      WHERE i.invoiceNo = invoice_No;
    ELSE
-      RAISE EXCEPTION 'With subscription No % there is no invoice', subscriberNo;
+      RAISE EXCEPTION 'With invoice No % there is no invoice', invoice_No;
    END IF;
 END;
 $$ LANGUAGE plpgsql;
