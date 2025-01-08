@@ -1,7 +1,8 @@
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QWidget, 
-    QFormLayout, QLineEdit, QHBoxLayout, QMessageBox ,QComboBox, QDialog, QDateEdit
-)
+    QFormLayout, QLineEdit, QHBoxLayout, QMessageBox ,QComboBox, QDialog, 
+    QDateEdit, QTableWidget, QTableWidgetItem, QHeaderView
+)    
 from PyQt5.QtCore import QDate
 from database import DatabaseManager
 from datetime import datetime
@@ -375,9 +376,9 @@ class MainAppWindow(QWidget):
         # Diğer butonlar
         self.button1 = QPushButton("Insert Invoice")
         self.button1.clicked.connect(self.insert_invoice)
-
-        self.button2 = QPushButton("Process 2")
-        self.button2.clicked.connect(self.process_2)
+        
+        self.button2 = QPushButton("Calculate Carbon Emission")  # Yeni buton
+        self.button2.clicked.connect(self.open_carbon_emission_window)
 
         self.button3 = QPushButton("Logout")
         self.button3.clicked.connect(self.logout)
@@ -393,8 +394,9 @@ class MainAppWindow(QWidget):
         if dialog.exec_():
             print("Invoice details saved successfully.")
 
-    def process_2(self):
-        QMessageBox.information(self, "Process 2", "Process 2 executed!")
+    def open_carbon_emission_window(self):
+        dialog = CarbonEmissionDialog(self.db_manager, self.subscription_no)
+        dialog.exec_()
 
     def logout(self):
         QMessageBox.information(self, "Logout", "You have been logged out.")
@@ -476,3 +478,39 @@ class InvoiceDialog(QDialog):
                 QMessageBox.critical(self, "Error", message)
         except ValueError:
             QMessageBox.warning(self, "Input Error", "Consumption amount must be a valid number.")
+
+class CarbonEmissionDialog(QDialog):
+    def __init__(self, db_manager, subscription_no):
+        super().__init__()
+        self.db_manager = db_manager
+        self.subscription_no = subscription_no
+
+        self.setWindowTitle("Carbon Emission")
+        self.setGeometry(200, 200, 600, 400)
+
+        # Tablo widget
+        self.table = QTableWidget()
+        self.table.setColumnCount(2)
+        self.table.setHorizontalHeaderLabels(["Invoice No", "Carbon Emission (kg)"])
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+
+        # Veritabanından veri al ve tabloyu güncelle
+        self.populate_table()
+
+        # Layout
+        layout = QVBoxLayout()
+        layout.addWidget(self.table)
+        self.setLayout(layout)
+
+    # Veritabanından karbon emisyonu verilerini alır ve tabloya ekler.
+    def populate_table(self):
+        result, error = self.db_manager.calculate_carbon_emission(self.subscription_no)
+        if error:
+            QMessageBox.critical(self, "Error", error)
+            return
+
+        # Tabloya verileri ekle
+        self.table.setRowCount(len(result))
+        for row_idx, (invoice_no, carbon_emission) in enumerate(result):
+            self.table.setItem(row_idx, 0, QTableWidgetItem(str(invoice_no)))
+            self.table.setItem(row_idx, 1, QTableWidgetItem(f"{carbon_emission:.2f}"))
