@@ -380,12 +380,16 @@ class MainAppWindow(QWidget):
         self.button2 = QPushButton("Calculate Carbon Emission")  # Yeni buton
         self.button2.clicked.connect(self.open_carbon_emission_window)
 
-        self.button3 = QPushButton("Logout")
-        self.button3.clicked.connect(self.logout)
+        self.button3 = QPushButton("Show My Invoices")  # Yeni buton
+        self.button3.clicked.connect(self.show_invoice_window)
+
+        self.buttonX = QPushButton("Logout")
+        self.buttonX.clicked.connect(self.logout)
 
         layout.addWidget(self.button1)
-        layout.addWidget(self.button2)
+        layout.addWidget(self.button2)  
         layout.addWidget(self.button3)
+        layout.addWidget(self.buttonX)
 
         self.setLayout(layout)
 
@@ -397,6 +401,9 @@ class MainAppWindow(QWidget):
     def open_carbon_emission_window(self):
         dialog = CarbonEmissionDialog(self.db_manager, self.subscription_no)
         dialog.exec_()
+
+    def show_invoice_window(self):
+        QMessageBox.information(self, "Invoices", "Success")
 
     def logout(self):
         QMessageBox.information(self, "Logout", "You have been logged out.")
