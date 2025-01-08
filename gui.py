@@ -64,7 +64,7 @@ class LoginWindow(QWidget):
 
         self.setWindowTitle("Login")
         self.setGeometry(200, 200, 400, 300)
-        self.setWindowModality(Qt.ApplicationModal) # diğer pencereleri kilitler.
+        self.setWindowModality(Qt.ApplicationModal)  # Diğer pencereleri kilitler.
 
         # Form layout for user input
         form_layout = QFormLayout()
@@ -83,10 +83,14 @@ class LoginWindow(QWidget):
         self.login_button = QPushButton("Login")
         self.login_button.clicked.connect(self.login)
 
+        self.reset_button = QPushButton("Reset Password")  # Yeni buton
+        self.reset_button.clicked.connect(self.open_update_password_dialog)
+
         self.cancel_button = QPushButton("Cancel")
         self.cancel_button.clicked.connect(self.close_window)
 
         button_layout.addWidget(self.login_button)
+        button_layout.addWidget(self.reset_button)
         button_layout.addWidget(self.cancel_button)
 
         # Main layout
@@ -124,9 +128,102 @@ class LoginWindow(QWidget):
         self.main_app.show()
         self.close()
 
+    def open_update_password_dialog(self):
+        dialog = PasswordUpdateDialog(DatabaseManager())
+        dialog.exec_()
 
     def close_window(self):
         self.close()
+
+
+#Şifre güncelleme ekranı.
+class PasswordUpdateDialog(QDialog):
+    def __init__(self, db_manager):
+        super().__init__()
+
+        self.db_manager = db_manager
+
+        self.setWindowTitle("Reset Password")
+        self.setGeometry(300, 300, 400, 300)
+        self.setWindowModality(Qt.ApplicationModal)  # Modal pencere
+
+        # Form layout
+        layout = QVBoxLayout()
+        form_layout = QFormLayout()
+
+        # Alanlar
+        self.subscription_no_input = QLineEdit()
+        self.old_password_input = QLineEdit()
+        self.old_password_input.setEchoMode(QLineEdit.Password)
+
+        self.new_password_input = QLineEdit()
+        self.new_password_input.setEchoMode(QLineEdit.Password)
+
+        self.confirm_password_input = QLineEdit()
+        self.confirm_password_input.setEchoMode(QLineEdit.Password)
+
+        form_layout.addRow("Subscriber Number:", self.subscription_no_input)
+        form_layout.addRow("Old Password:", self.old_password_input)
+        form_layout.addRow("New Password:", self.new_password_input)
+        form_layout.addRow("Confirm New Password:", self.confirm_password_input)
+
+        # Butonlar
+        button_layout = QHBoxLayout()
+        self.reset_button = QPushButton("Reset")
+        self.reset_button.clicked.connect(self.reset_password)
+
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.close)
+
+        button_layout.addWidget(self.reset_button)
+        button_layout.addWidget(self.cancel_button)
+
+        layout.addLayout(form_layout)
+        layout.addLayout(button_layout)
+        self.setLayout(layout)
+    # Şifre sıfırlama işlemini gerçekleştirir.
+    def reset_password(self):
+        subscription_no = self.subscription_no_input.text()
+        old_password = self.old_password_input.text()
+        new_password = self.new_password_input.text()
+        confirm_password = self.confirm_password_input.text()
+
+        # Alanların boş olup olmadığını kontrol et
+        if not subscription_no or not old_password or not new_password or not confirm_password:
+            QMessageBox.warning(self, "Error", "All fields must be filled!")
+            return
+
+        # Kullanıcı adı ve eski şifre doğrulama
+        if not subscription_no.isdigit() or len(subscription_no) != 9:
+            QMessageBox.warning(self, "Error", "Subscriber number must be a 9-digit number.")
+            return
+
+        valid, message = self.db_manager.validate_login(subscription_no, old_password)
+        if not valid:
+            QMessageBox.warning(self, "Error", "Old password is incorrect.")
+            return
+
+        # Yeni şifre doğrulama
+        if new_password != confirm_password:
+            QMessageBox.warning(self, "Error", "New passwords do not match.")
+            return
+
+        if new_password == old_password:
+            QMessageBox.warning(self, "Error", "New password cannot be the same as the old password.")
+            return
+
+        if len(new_password) > 20:
+            QMessageBox.warning(self, "Error", "New password must not exceed 20 characters.")
+            return
+
+        # Şifreyi güncelle
+        success, update_message = self.db_manager.update_password(subscription_no, new_password)
+        if success:
+            QMessageBox.information(self, "Success", update_message)
+            self.accept()
+        else:
+            QMessageBox.critical(self, "Error", update_message)
+
 
 # Admin giriş ekranı.
 class AdminLoginWindow(QWidget):
