@@ -294,22 +294,6 @@ class AdminLoginWindow(QWidget):
     def close_window(self):
         self.close()
 
-
-# admin panel giriş ekranı.
-class AdminPanelWindow(QWidget):
-    def __init__(self):
-        super().__init__()
-
-        self.setWindowTitle("Admin Panel")
-        self.setGeometry(300, 300, 600, 400)
-
-        layout = QVBoxLayout()
-        label = QLabel("Welcome to the Admin Panel!")
-        label.setStyleSheet("font-size: 16px; font-weight: bold;")
-        layout.addWidget(label)
-
-        self.setLayout(layout)
-
 #Bireysel abonelik kayıt ekranı.
 class IndividualWindow(QWidget):
     def __init__(self):
@@ -717,3 +701,18 @@ class CarbonEmissionDialog(QDialog):
         for row_idx, (invoice_no, carbon_emission) in enumerate(result):
             self.table.setItem(row_idx, 0, QTableWidgetItem(str(invoice_no)))
             self.table.setItem(row_idx, 1, QTableWidgetItem(f"{carbon_emission:.2f}"))
+
+# admin panel giriş ekranı.
+class AdminPanelWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Admin Panel")
+        self.setGeometry(300, 300, 600, 400)
+
+        layout = QVBoxLayout()
+        label = QLabel("Welcome to the Admin Panel!")
+        label.setStyleSheet("font-size: 16px; font-weight: bold;")
+        layout.addWidget(label)
+
+        self.setLayout(layout)
