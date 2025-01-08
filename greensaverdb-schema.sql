@@ -324,13 +324,23 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-create or replace function update_invoice(invoiceNo integer, invoiceType varchar(15),invoiceAmount numeric,consumptAmount numeric)
+CREATE OR REPLACE FUNCTION update_invoice(
+    p_invoiceNo integer, 
+    p_invoiceType varchar(15), 
+    p_invoiceAmount numeric, 
+    p_consumptAmount numeric
+)
 RETURNS VOID AS $$
 BEGIN
-UPDATE invoice i set  i.invoicetype = invoiceType, i.consumptionamount=consumptAmount, i.invoiceamount=invoiceAmount
-WHERE i.invoiceno = invoiceNo;
+    UPDATE invoice i 
+    SET 
+        invoicetype = p_invoiceType, 
+        consumptionamount = p_consumptAmount, 
+        invoiceamount = p_invoiceAmount
+    WHERE i.invoiceno = p_invoiceNo;
 END;
 $$ LANGUAGE plpgsql;
+
 
 CREATE OR REPLACE FUNCTION get_top_spenders()
 RETURNS TABLE( sub_number integer,  avg_invoice_amount numeric) AS $$
