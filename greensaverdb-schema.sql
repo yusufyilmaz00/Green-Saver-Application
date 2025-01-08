@@ -89,18 +89,6 @@ CREATE SEQUENCE invoice_no_seq
     MAXVALUE 999999999
     NO CYCLE;
 
-DROP FUNCTION insert_individual_subscriber(
-    fname VARCHAR,
-    lname VARCHAR,
-    id_number CHAR(11),
-    birthday DATE,
-    registration_date DATE,
-    address VARCHAR,
-    email VARCHAR,
-    phone_number CHAR(10),
-	userpass VARCHAR
-);
-
 CREATE OR REPLACE FUNCTION insert_individual_subscriber(
     fname VARCHAR,
     lname VARCHAR,
@@ -278,6 +266,3 @@ DECLARE
 	END LOOP;
  END;
  $$ LANGUAGE plpgsql;
-
-
-
