@@ -278,3 +278,28 @@ BEGIN
    END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+   CREATE OR REPLACE FUNCTION update_password(subscriberNo integer, newPass VARCHAR(20))
+RETURNS VOID AS $$
+BEGIN
+UPDATE subscriber set userpassword = newPass where subscriptionno=subscriberNo;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION delete_invoice(subscriberNo integer, invoiceNo integer)
+RETURNS void AS $$
+
+BEGIN
+	IF EXISTS (SELECT 1 FROM subscriber WHERE subscriberNo = subscriberNo)
+	   AND EXISTS(SELECT 1 FROM invoice i WHERE i.subNumber = subscriberNo AND i.invoiceNo = invoiceNo)
+	THEN
+		DELETE FROM invoice i WHERE i.invoiceNo = invoiceNo;
+
+	ELSEIF NOT EXISTS(SELECT 1 FROM subscriber WHERE subscriberNo = subscriberNo)
+     THEN RAISE EXCEPTION 'With subscription No % there is no subscriber', subscriberNo;
+
+	ELSEIF NOT EXISTS(SELECT 1 FROM invoice i WHERE i.subNumber = subscriberNo AND i.invoiceNo = invoiceNo)
+	THEN RAISE EXCEPTION 'With invoice No % there is no invoice', invoiceNo;
+   END IF;
+END;
+$$ LANGUAGE plpgsql;
