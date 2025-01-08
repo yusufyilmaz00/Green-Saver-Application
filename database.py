@@ -268,3 +268,43 @@ class DatabaseManager:
             return None, f"An error occurred: {e}"
         finally:
             self.close_connection()
+# Kullanıcının tüm faturalarını gösteren fonksiyon.Bireysel veya kurumsal kullanıcıya göre SQL fonksiyonunu çalıştırır.
+    def get_all_invoices(self, subscriber_no):
+        conn = self.create_connection()
+        if not conn:
+            return None, "Database connection failed!"
+
+        try:
+            # Kullanıcının abone tipini al
+            cursor = conn.cursor()
+            query_type = "SELECT subscriberType FROM Subscriber WHERE subscriptionNo = %s;"
+            cursor.execute(query_type, (subscriber_no,))
+            subscriber_type = cursor.fetchone()
+
+            if not subscriber_type:
+                return None, "Subscriber type not found."
+
+            subscriber_type = subscriber_type[0]  # 'I' (Individual) veya 'C' (Corporate)
+
+            # Doğru SQL fonksiyonunu çağır
+            if subscriber_type == 'I':
+                query = "SELECT get_all_individualInvoices(%s);"
+            elif subscriber_type == 'C':
+                query = "SELECT get_all_corporateInvoices(%s);"
+            else:
+                return None, "Invalid subscriber type."
+
+            cursor.execute(query, (subscriber_no,))
+
+            # `RAISE INFO` mesajlarını yakala
+            conn.commit()  # PostgreSQL işlemini tamamla
+            messages = conn.notices  # RAISE INFO ile dönen mesajları al
+            if not messages:
+                return None, "No messages received from the database."
+
+            return messages, None
+        except Exception as e:
+            return None, f"An error occurred: {e}"
+        finally:
+            if conn:
+                conn.close()
