@@ -160,31 +160,33 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE FUNCTION invoice_collision_func() 
+CREATE or REPLACE FUNCTION invoice_collision_func()
 RETURNS TRIGGER AS $$
 BEGIN
-    -- Aynı tarih ve aynı fatura türü varsa kontrol et
+    -- Aynı ay ve aynı fatura türü varsa kontrol et
     IF EXISTS (
-        SELECT 1 
+        SELECT 1
         FROM invoice
-        WHERE invoiceDate = NEW.invoiceDate 
+        WHERE TO_CHAR(invoiceDate, 'YYYY-MM') = TO_CHAR(NEW.invoiceDate, 'YYYY-MM')
           AND invoiceType = NEW.invoiceType
+		  AND subnumber = NEW.subnumber
     ) THEN
         -- Eğer böyle bir kayıt varsa hata fırlat
-        RAISE EXCEPTION 'You cannot insert the same invoice on the same date and type';
+        RAISE EXCEPTION 'You cannot insert the same invoice on the same month and type';
         RETURN NULL;
     ELSE
         -- Eğer problem yoksa yeni kaydı kabul et
         RETURN NEW;
-    END IF; 
-END; 
+    END IF;
+END;
 $$ LANGUAGE 'plpgsql';
 
-CREATE TRIGGER invoice_collision_trig 
+CREATE TRIGGER invoice_collision_trig
 BEFORE INSERT
-ON invoice 
-FOR EACH ROW 
+ON invoice
+FOR EACH ROW
 EXECUTE PROCEDURE invoice_collision_func();
+
 
 CREATE TYPE carbon_emission_record AS (
     invoice_no INTEGER,
