@@ -244,30 +244,36 @@ FOR EACH ROW EXECUTE FUNCTION trig_invoiceInsertControl();
 CREATE OR REPLACE FUNCTION get_all_individualInvoices(subscriberNo integer)
 RETURNS void AS $$
 DECLARE
- individual_cursor CURSOR FOR SELECT subscriptionNo, invoiceNo, fname|| ' '|| lname AS subscriberName,invoiceDate,invoiceType,consumptionAmount,invoiceAmount
- 					    FROM invoice i1,individualSubscriber i2
-						WHERE i1.subnumber = i2.subscriptionNo and subscriberNo = i1.subnumber;
- BEGIN
-	FOR row_i IN individual_cursor LOOP
-	 RAISE INFO '%, %, %, %, %, %, % ',row_i.subscriptionNo,row_i.invoiceNo,row_i.subscriberName,row_i.invoiceDate,row_i.invoiceType,row_i.consumptionAmount,row_i.invoiceAmount;
-	END LOOP;
- END;
- $$ LANGUAGE plpgsql;
+ individual_cursor CURSOR FOR SELECT subscriptionNo, invoiceNo, fname || ' ' || lname AS subscriberName, 
+                               invoiceDate, invoiceType, consumptionAmount, invoiceAmount
+                               FROM invoice i1, individualSubscriber i2
+                               WHERE i1.subnumber = i2.subscriptionNo AND subscriberNo = i1.subnumber;
+BEGIN
+    FOR row_i IN individual_cursor LOOP
+        RAISE INFO '%, %, %, %, %, %, %', row_i.subscriptionNo, row_i.invoiceNo, row_i.subscriberName, 
+                                          row_i.invoiceDate, row_i.invoiceType, row_i.consumptionAmount, 
+                                          row_i.invoiceAmount;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
 
- CREATE OR REPLACE FUNCTION get_all_corporateInvoices(subscriberNo integer)
+CREATE OR REPLACE FUNCTION get_all_corporateInvoices(subscriberNo integer)
 RETURNS void AS $$
 DECLARE
- corporate_cursor CURSOR FOR SELECT subscriptionNo, invoiceNo, corporateName AS subscriberName,invoiceDate,invoiceType,consumptionAmount,invoiceAmount
- 					    FROM invoice i1,corporateSubscriber i2
-						WHERE i1.subnumber = i2.subscriptionNo and subscriberNo = i1.subnumber;
- BEGIN
-	FOR row_i IN corporate_cursor LOOP
-	 RAISE INFO '%, %, %, %, %, %, % ',row_i.subscriptionNo,row_i.invoiceNo,row_i.subscriberName,row_i.invoiceDate,row_i.invoiceType,row_i.consumptionAmount,row_i.invoiceAmount;
-	END LOOP;
- END;
- $$ LANGUAGE plpgsql;
+ corporate_cursor CURSOR FOR SELECT subscriptionNo, invoiceNo, corporateName AS subscriberName, 
+                              invoiceDate, invoiceType, consumptionAmount, invoiceAmount
+                              FROM invoice i1, corporateSubscriber i2
+                              WHERE i1.subnumber = i2.subscriptionNo AND subscriberNo = i1.subnumber;
+BEGIN
+    FOR row_i IN corporate_cursor LOOP
+        RAISE INFO '%, %, %, %, %, %, %', row_i.subscriptionNo, row_i.invoiceNo, row_i.subscriberName, 
+                                          row_i.invoiceDate, row_i.invoiceType, row_i.consumptionAmount, 
+                                          row_i.invoiceAmount;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
 
-    CREATE OR REPLACE FUNCTION get_invoice(subscriberNo integer)
+CREATE OR REPLACE FUNCTION get_invoice(subscriberNo integer)
 RETURNS TABLE (invoiceDate date, invoiceNo integer, subNumber integer, invoiceType varchar(15), consumptionAmount numeric, invoiceAmount numeric) AS $$
 BEGIN
    IF EXISTS (SELECT 1 FROM subscriber WHERE subscriptionNo = subscriberNo) THEN
