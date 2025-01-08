@@ -313,3 +313,15 @@ UPDATE invoice i set  i.invoicetype = invoiceType, i.consumptionamount=consumptA
 WHERE i.invoiceno = invoiceNo;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION get_top_spenders()
+RETURNS TABLE( sub_number integer,  avg_invoice_amount numeric) AS $$
+BEGIN
+    RETURN QUERY
+    SELECT subNumber,
+           avg(invoiceAmount) AS avg_invoice_amount
+    FROM invoice
+    GROUP BY subNumber
+    HAVING avg(invoiceAmount) > 500;
+END;
+$$ LANGUAGE plpgsql;
