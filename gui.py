@@ -565,6 +565,9 @@ class MainAppWindow(QWidget):
         self.button5 = QPushButton("Update Invoice")
         self.button5.clicked.connect(self.open_update_invoice_window)
 
+        self.button6 = QPushButton("Show Invoice")
+        self.button6.clicked.connect(self.open_show_invoice_window)
+
         self.buttonX = QPushButton("Logout")
         self.buttonX.clicked.connect(self.logout)
 
@@ -573,6 +576,7 @@ class MainAppWindow(QWidget):
         layout.addWidget(self.button3)
         layout.addWidget(self.button4)
         layout.addWidget(self.button5)
+        layout.addWidget(self.button6)
         layout.addWidget(self.buttonX)
 
         self.setLayout(layout)
@@ -609,6 +613,10 @@ class MainAppWindow(QWidget):
     def open_update_invoice_window(self):
         dialog = UpdateInvoiceDialog(self.db_manager, self.subscription_no, self.subscriber_type)
         dialog.exec_()    
+    
+    def open_show_invoice_window(self):
+        dialog = ShowInvoiceDialog(self.db_manager)
+        dialog.exec_()
 
     def logout(self):
         QMessageBox.information(self, "Logout", "You have been logged out.")
@@ -923,6 +931,69 @@ class UpdateInvoiceDialog(QDialog):
             print(f"An error occurred: {e}")
             QMessageBox.critical(self, "Critical Error", str(e))
 
+class ShowInvoiceDialog(QDialog):
+    def __init__(self, db_manager):
+        super().__init__()
+
+        self.db_manager = db_manager
+
+        self.setWindowTitle("Show Invoice")
+        self.setGeometry(300, 300, 400, 300)
+        self.setWindowModality(Qt.ApplicationModal)
+
+        layout = QVBoxLayout()
+
+        # Fatura numarası girişi
+        self.invoice_no_label = QLabel("Enter Invoice Number:")
+        self.invoice_no_input = QLineEdit()
+        layout.addWidget(self.invoice_no_label)
+        layout.addWidget(self.invoice_no_input)
+
+        # Butonlar
+        button_layout = QHBoxLayout()
+        self.show_button = QPushButton("Show")
+        self.show_button.clicked.connect(self.show_invoice)
+
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.close)
+
+        button_layout.addWidget(self.show_button)
+        button_layout.addWidget(self.cancel_button)
+
+        layout.addLayout(button_layout)
+
+        # Sonuçları göstermek için bir alan
+        self.result_label = QLabel()
+        layout.addWidget(self.result_label)
+
+        self.setLayout(layout)
+
+    # Fatura numarasına göre sonucu gösterir.
+    def show_invoice(self):
+        invoice_no = self.invoice_no_input.text()
+        if not invoice_no or not invoice_no.isdigit():
+            QMessageBox.warning(self, "Input Error", "Please enter a valid invoice number!")
+            return
+
+        # Veritabanı sorgusu
+        result, error = self.db_manager.get_invoice(int(invoice_no))
+        if error:
+            QMessageBox.critical(self, "Error", error)
+            return
+
+        if result:
+            # Sonuçları formatla ve göster
+            details = "\n".join([
+                f"Date: {result[0][0]}",
+                f"Invoice No: {result[0][1]}",
+                f"Subscriber No: {result[0][2]}",
+                f"Type: {result[0][3]}",
+                f"Consumption: {result[0][4]}",
+                f"Amount: {result[0][5]}"
+            ])
+            self.result_label.setText(details)
+        else:
+            self.result_label.setText("No data found for the given invoice number.")
 
 # admin panel giriş ekranı.
 class AdminPanelWindow(QWidget):

@@ -268,6 +268,7 @@ class DatabaseManager:
             return None, f"An error occurred: {e}"
         finally:
             self.close_connection()
+
 # Kullanıcının tüm faturalarını gösteren fonksiyon.Bireysel veya kurumsal kullanıcıya göre SQL fonksiyonunu çalıştırır.
     def get_all_invoices(self, subscriber_no):
         conn = self.create_connection()
@@ -368,4 +369,22 @@ class DatabaseManager:
             if conn:
                 conn.close()
 
+    # Verilen fatura numarasına göre faturayı getirir.
+    def get_invoice(self, invoice_no):
+        conn = self.create_connection()
+        if not conn:
+            return None, "Database connection failed!"
+
+        try:
+            cursor = conn.cursor()
+            query = "SELECT * FROM get_invoice(%s);"
+            cursor.execute(query, (invoice_no,))
+            results = cursor.fetchall()  # Tüm sonuçları al
+            return results, None
+        except Exception as e:
+            print(f"Database error in get_invoice: {e}")
+            return None, f"An error occurred: {e}"
+        finally:
+            if conn:
+                conn.close()
 
