@@ -229,3 +229,22 @@ class DatabaseManager:
             return False, f"An error occurred: {e}"
         finally:
             self.close_connection()
+
+    # Kullanıcı abonelik numarasına göre her bir faturanın karbon emisyonunu hesaplar.
+    def calculate_carbon_emission(self, subscription_no):
+        conn = self.create_connection()
+        if not conn:
+            return None, "Database connection failed!"
+
+        try:
+            cursor = conn.cursor()
+            query = """
+                SELECT * FROM calculate_carbon_emission(%s);
+            """
+            cursor.execute(query, (subscription_no,))
+            result = cursor.fetchall()  # Tüm kayıtları al
+            return result, None  # Başarılı sonuç döndür
+        except Exception as e:
+            return None, f"An error occurred: {e}"
+        finally:
+            self.close_connection()
