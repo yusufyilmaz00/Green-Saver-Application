@@ -19,17 +19,20 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
 
         # Buttons
-        self.login_button = QPushButton("Login")
-        self.register_corporate_button = QPushButton("Corporate Subscription")
-        self.register_individual_button = QPushButton("Individual Subscription")
+        self.login_button = QPushButton("Subscriber Login")
+        self.admin_login_button = QPushButton("Admin Login")
+        self.register_corporate_button = QPushButton("Register Corporate Subscription")
+        self.register_individual_button = QPushButton("Register Individual Subscription")
 
         # Button click events
         self.login_button.clicked.connect(self.open_login_window)
         self.register_corporate_button.clicked.connect(self.open_corporate_window)
         self.register_individual_button.clicked.connect(self.open_individual_window)
+        self.admin_login_button.clicked.connect(self.open_admin_login_window)
 
         # Add buttons to layout
         layout.addWidget(self.login_button)
+        layout.addWidget(self.admin_login_button)
         layout.addWidget(self.register_corporate_button)
         layout.addWidget(self.register_individual_button)
 
@@ -41,6 +44,10 @@ class MainWindow(QMainWindow):
     def open_login_window(self):
         self.login_window = LoginWindow()
         self.login_window.show()
+
+    def open_admin_login_window(self):
+        self.admin_login_window = AdminLoginWindow()
+        self.admin_login_window.show()
 
     def open_corporate_window(self):
         self.register_corporate_window = CorporateWindow()
@@ -121,6 +128,90 @@ class LoginWindow(QWidget):
     def close_window(self):
         self.close()
 
+# Admin giriş ekranı.
+class AdminLoginWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Admin Login")
+        self.setGeometry(300, 300, 400, 200)
+        self.setWindowModality(Qt.ApplicationModal)  # Diğer pencereleri kilitler
+
+        # Kullanıcı adı ve şifre
+        self.correct_username = "admin"
+        self.correct_password = "1111"
+
+        # Form layout
+        layout = QVBoxLayout()
+
+        # Kullanıcı adı
+        self.username_label = QLabel("Username:")
+        self.username_input = QLineEdit()
+
+        # Şifre
+        self.password_label = QLabel("Password:")
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Password)
+
+        # Maksimum karakter kontrolü
+        self.password_input.setMaxLength(20)
+
+        # Butonlar
+        button_layout = QHBoxLayout()
+        self.login_button = QPushButton("Login")
+        self.login_button.clicked.connect(self.handle_login)
+
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.close_window)
+
+        button_layout.addWidget(self.login_button)
+        button_layout.addWidget(self.cancel_button)
+
+        # Layout düzeni
+        layout.addWidget(self.username_label)
+        layout.addWidget(self.username_input)
+        layout.addWidget(self.password_label)
+        layout.addWidget(self.password_input)
+        layout.addLayout(button_layout)
+
+        self.setLayout(layout)
+
+    # Kullanıcı adı ve şifre kontrolü yapar.
+    def handle_login(self):
+        username = self.username_input.text()
+        password = self.password_input.text()
+
+        if username == self.correct_username and password == self.correct_password:
+            QMessageBox.information(self, "Login Successful", "Welcome to Admin Panel!")
+            self.open_admin_panel()
+        else:
+            QMessageBox.warning(self, "Login Failed", "Invalid username or password.")
+
+    # Admin paneli penceresini açar.
+    def open_admin_panel(self):
+        self.admin_panel = AdminPanelWindow()
+        self.admin_panel.show()
+        self.close()
+        
+    # Cancel butonuna basıldığında pencereyi kapatır.
+    def close_window(self):
+        self.close()
+
+
+# admin panel giriş ekranı.
+class AdminPanelWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("Admin Panel")
+        self.setGeometry(300, 300, 600, 400)
+
+        layout = QVBoxLayout()
+        label = QLabel("Welcome to the Admin Panel!")
+        label.setStyleSheet("font-size: 16px; font-weight: bold;")
+        layout.addWidget(label)
+
+        self.setLayout(layout)
 
 #Bireysel abonelik kayıt ekranı.
 class IndividualWindow(QWidget):
