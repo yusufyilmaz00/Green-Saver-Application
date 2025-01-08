@@ -294,21 +294,33 @@ UPDATE subscriber set userpassword = newPass where subscriptionno=subscriberNo;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION delete_invoice(subscriberNo integer, invoiceNo integer)
+CREATE OR REPLACE FUNCTION delete_invoice(p_subscriberNo integer, p_invoiceNo integer)
 RETURNS void AS $$
-
 BEGIN
-	IF EXISTS (SELECT 1 FROM subscriber WHERE subscriberNo = subscriberNo)
-	   AND EXISTS(SELECT 1 FROM invoice i WHERE i.subNumber = subscriberNo AND i.invoiceNo = invoiceNo)
-	THEN
-		DELETE FROM invoice i WHERE i.invoiceNo = invoiceNo;
+    -- Kullanıcının ve faturanın varlığını kontrol et
+    IF EXISTS (
+        SELECT 1 FROM subscriber WHERE subscriptionNo = p_subscriberNo
+    ) AND EXISTS (
+        SELECT 1 FROM invoice i WHERE i.subNumber = p_subscriberNo AND i.invoiceNo = p_invoiceNo
+    )
+    THEN
+        -- Faturayı sil
+        DELETE FROM invoice i WHERE i.invoiceNo = p_invoiceNo;
 
-	ELSEIF NOT EXISTS(SELECT 1 FROM subscriber WHERE subscriberNo = subscriberNo)
-     THEN RAISE EXCEPTION 'With subscription No % there is no subscriber', subscriberNo;
+    -- Kullanıcı yoksa hata fırlat
+    ELSIF NOT EXISTS (
+        SELECT 1 FROM subscriber WHERE subscriptionNo = p_subscriberNo
+    )
+    THEN
+        RAISE EXCEPTION 'With subscription No % there is no subscriber', p_subscriberNo;
 
-	ELSEIF NOT EXISTS(SELECT 1 FROM invoice i WHERE i.subNumber = subscriberNo AND i.invoiceNo = invoiceNo)
-	THEN RAISE EXCEPTION 'With invoice No % there is no invoice', invoiceNo;
-   END IF;
+    -- Fatura yoksa hata fırlat
+    ELSIF NOT EXISTS (
+        SELECT 1 FROM invoice i WHERE i.subNumber = p_subscriberNo AND i.invoiceNo = p_invoiceNo
+    )
+    THEN
+        RAISE EXCEPTION 'With invoice No % there is no invoice', p_invoiceNo;
+    END IF;
 END;
 $$ LANGUAGE plpgsql;
 
