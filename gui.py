@@ -556,8 +556,8 @@ class MainAppWindow(QWidget):
         self.button2 = QPushButton("Calculate Carbon Emission")
         self.button2.clicked.connect(self.open_carbon_emission_window)
 
-        self.button3 = QPushButton("Show My Invoices")
-        self.button3.clicked.connect(self.show_invoice_window)
+        self.button3 = QPushButton("Show My All Invoices")
+        self.button3.clicked.connect(self.show_all_invoice_window)
 
         self.button4 = QPushButton("Delete Invoice")
         self.button4.clicked.connect(self.open_delete_invoice_window)
@@ -587,7 +587,7 @@ class MainAppWindow(QWidget):
         dialog.exec_()
 
     # Kullanıcının faturalarını gösterir.
-    def show_invoice_window(self):
+    def show_all_invoice_window(self):
         invoices, error = self.db_manager.get_all_invoices(self.subscription_no)
 
         if error:
@@ -599,7 +599,7 @@ class MainAppWindow(QWidget):
             return
 
         # Faturaları yeni bir pencere içinde göster
-        self.invoice_window = InvoiceMessagesWindow(invoices)
+        self.invoice_window = AllInvoiceMessagesWindow(invoices)
         self.invoice_window.show()
 
     def open_delete_invoice_window(self):
@@ -731,7 +731,7 @@ class CarbonEmissionDialog(QDialog):
             self.table.setItem(row_idx, 0, QTableWidgetItem(str(invoice_no)))
             self.table.setItem(row_idx, 1, QTableWidgetItem(f"{carbon_emission:.2f}"))
 
-class InvoiceMessagesWindow(QWidget):
+class AllInvoiceMessagesWindow(QWidget):
     def __init__(self, messages):
         super().__init__()
 
