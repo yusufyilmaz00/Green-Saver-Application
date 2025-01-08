@@ -578,8 +578,21 @@ class MainAppWindow(QWidget):
         dialog = CarbonEmissionDialog(self.db_manager, self.subscription_no)
         dialog.exec_()
 
+    # Kullanıcının faturalarını gösterir.
     def show_invoice_window(self):
-        QMessageBox.information(self, "Invoices", "Success")
+        invoices, error = self.db_manager.get_all_invoices(self.subscription_no)
+
+        if error:
+            QMessageBox.critical(self, "Error", error)
+            return
+
+        if not invoices:
+            QMessageBox.information(self, "No Data", "No invoices found.")
+            return
+
+        # Faturaları yeni bir pencere içinde göster
+        self.invoice_window = InvoiceMessagesWindow(invoices)
+        self.invoice_window.show()
 
     def logout(self):
         QMessageBox.information(self, "Logout", "You have been logged out.")
@@ -701,6 +714,41 @@ class CarbonEmissionDialog(QDialog):
         for row_idx, (invoice_no, carbon_emission) in enumerate(result):
             self.table.setItem(row_idx, 0, QTableWidgetItem(str(invoice_no)))
             self.table.setItem(row_idx, 1, QTableWidgetItem(f"{carbon_emission:.2f}"))
+
+class InvoiceMessagesWindow(QWidget):
+    def __init__(self, messages):
+        super().__init__()
+
+        self.setWindowTitle("My Invoices")
+        self.setGeometry(300, 300, 600, 400)
+        self.setWindowModality(Qt.ApplicationModal)  # Modal pencere
+
+        layout = QVBoxLayout()
+
+        label = QLabel("Your Invoices:")
+        label.setStyleSheet("font-size: 14px; font-weight: bold;")
+        layout.addWidget(label)
+
+        # Mesajları bir liste halinde göster
+        if messages:
+            for message in messages:
+                msg_label = QLabel(message)
+                layout.addWidget(msg_label)
+        else:
+            no_message_label = QLabel("No invoices found.")
+            layout.addWidget(no_message_label)
+
+        # Kapatma butonu
+        close_button = QPushButton("Close")
+        close_button.clicked.connect(self.close)  # Pencereyi kapatır
+        layout.addWidget(close_button)
+
+        self.setLayout(layout)
+
+    def closeEvent(self, event):
+        print("InvoiceMessagesWindow is closing.")  # Kapatıldığını kontrol etmek için
+        event.accept()
+
 
 # admin panel giriş ekranı.
 class AdminPanelWindow(QWidget):
