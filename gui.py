@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import (
     QFormLayout, QLineEdit, QHBoxLayout, QMessageBox ,QComboBox, QDialog, 
     QDateEdit, QTableWidget, QTableWidgetItem, QHeaderView
 )    
-from PyQt5.QtCore import QDate
+from PyQt5.QtCore import QDate,Qt
 from database import DatabaseManager
 from datetime import datetime
 
@@ -57,6 +57,7 @@ class LoginWindow(QWidget):
 
         self.setWindowTitle("Login")
         self.setGeometry(200, 200, 400, 300)
+        self.setWindowModality(Qt.ApplicationModal) # diğer pencereleri kilitler.
 
         # Form layout for user input
         form_layout = QFormLayout()
@@ -128,6 +129,7 @@ class IndividualWindow(QWidget):
 
         self.setWindowTitle("Individual Subscription")
         self.setGeometry(200, 200, 400, 500)
+        self.setWindowModality(Qt.ApplicationModal) # diğer pencereleri kilitler.
 
         # Form layout for user input
         form_layout = QFormLayout()
@@ -239,6 +241,7 @@ class CorporateWindow(QWidget):
 
         self.setWindowTitle("Corporate Subscription")
         self.setGeometry(200, 200, 400, 600)
+        self.setWindowModality(Qt.ApplicationModal) # diğer pencereleri kilitler.
 
         # Form layout for user input
         form_layout = QFormLayout()
@@ -365,6 +368,7 @@ class MainAppWindow(QWidget):
 
         self.setWindowTitle("Main Application")
         self.setGeometry(200, 200, 600, 400)
+        self.setWindowModality(Qt.ApplicationModal) # diğer pencereleri kilitler.
 
         layout = QVBoxLayout()
 
@@ -419,6 +423,9 @@ class InvoiceDialog(QDialog):
 
         self.setWindowTitle("Invoice Insert")
         self.setGeometry(100, 100, 300, 200)
+
+        # Pencereyi modal yaparak diğer pencereleri kilitler.
+        self.setWindowModality(Qt.ApplicationModal)
 
         # Create layout
         layout = QVBoxLayout()
@@ -494,6 +501,7 @@ class CarbonEmissionDialog(QDialog):
 
         self.setWindowTitle("Carbon Emission")
         self.setGeometry(200, 200, 600, 400)
+        self.setWindowModality(Qt.ApplicationModal) # diğer pencereleri kilitler.
 
         # Tablo widget
         self.table = QTableWidget()
