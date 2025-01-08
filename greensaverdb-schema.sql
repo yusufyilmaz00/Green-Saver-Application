@@ -264,3 +264,17 @@ DECLARE
 	END LOOP;
  END;
  $$ LANGUAGE plpgsql;
+
+    CREATE OR REPLACE FUNCTION get_invoice(subscriberNo integer)
+RETURNS TABLE (invoiceDate date, invoiceNo integer, subNumber integer, invoiceType varchar(15), consumptionAmount numeric, invoiceAmount numeric) AS $$
+BEGIN
+   IF EXISTS (SELECT 1 FROM subscriber WHERE subscriptionNo = subscriberNo) THEN
+      RETURN QUERY
+      SELECT i.invoiceDate, i.invoiceNo, i.subNumber, i.invoiceType, i.consumptionAmount, i.invoiceAmount
+      FROM invoice i
+      WHERE i.subNumber = subscriberNo;
+   ELSE
+      RAISE EXCEPTION 'With subscription No % there is no invoice', subscriberNo;
+   END IF;
+END;
+$$ LANGUAGE plpgsql;
