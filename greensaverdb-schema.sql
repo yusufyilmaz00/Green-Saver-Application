@@ -325,3 +325,42 @@ BEGIN
     HAVING avg(invoiceAmount) > 500;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION calc_all_time_avg_consumptionAmount(subscriberNo integer,invoice_Type varchar(15))
+RETURNS numeric AS $$
+DECLARE
+averageConsumptionAmount numeric;
+BEGIN
+ 		SELECT avg(consumptionAmount) into averageConsumptionAmount
+ 	    FROM invoice i
+	    WHERE subNumber = subscriberNo and i.invoiceType = invoice_Type;
+	    RETURN averageConsumptionAmount;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION	last_two_months_invoice(subscriberNo integer, invoice_Type varchar(15))
+RETURNS numeric AS $$
+DECLARE
+consumptionAmount1 numeric;
+consumptionAmount2 numeric;
+BEGIN
+
+   SELECT consumptionAmount into consumptionAmount1
+   FROM invoice i
+   WHERE i.subNumber = subscriberNo and i.invoiceType = invoice_Type
+   ORDER BY invoiceDate  DESC
+   LIMIT 1;
+
+   SELECT consumptionAmount into consumptionAmount2
+   FROM invoice i
+   WHERE i.subNumber = subscriberNo and i.invoiceType = invoice_Type
+   ORDER BY invoiceDate  DESC
+   LIMIT 1
+   OFFSET 1;
+
+   RETURN (consumptionAmount1-consumptionAmount2);
+
+END;
+$$ LANGUAGE plpgsql;
+
