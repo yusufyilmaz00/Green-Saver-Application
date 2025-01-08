@@ -559,12 +559,16 @@ class MainAppWindow(QWidget):
         self.button3 = QPushButton("Show My Invoices")  # Yeni buton
         self.button3.clicked.connect(self.show_invoice_window)
 
+        self.button4 = QPushButton("Delete Invoice")  # Yeni buton
+        self.button4.clicked.connect(self.open_delete_invoice_window)
+        
         self.buttonX = QPushButton("Logout")
         self.buttonX.clicked.connect(self.logout)
 
         layout.addWidget(self.button1)
         layout.addWidget(self.button2)  
         layout.addWidget(self.button3)
+        layout.addWidget(self.button4)
         layout.addWidget(self.buttonX)
 
         self.setLayout(layout)
@@ -593,6 +597,10 @@ class MainAppWindow(QWidget):
         # Faturaları yeni bir pencere içinde göster
         self.invoice_window = InvoiceMessagesWindow(invoices)
         self.invoice_window.show()
+
+    def open_delete_invoice_window(self):
+        dialog = DeleteInvoiceDialog(self.db_manager, self.subscription_no)
+        dialog.exec_()
 
     def logout(self):
         QMessageBox.information(self, "Logout", "You have been logged out.")
@@ -749,6 +757,70 @@ class InvoiceMessagesWindow(QWidget):
         print("InvoiceMessagesWindow is closing.")  # Kapatıldığını kontrol etmek için
         event.accept()
 
+class DeleteInvoiceDialog(QDialog):
+    def __init__(self, db_manager, subscription_no):
+        super().__init__()
+        self.db_manager = db_manager
+        self.subscription_no = subscription_no
+        self.selected_invoice = None
+
+        self.setWindowTitle("Delete Invoice")
+        self.setGeometry(300, 300, 600, 400)
+        self.setWindowModality(Qt.ApplicationModal)  # Modal pencere
+
+        layout = QVBoxLayout()
+
+        # Faturaları göster
+        self.invoice_list = QLabel("Invoices:")
+        layout.addWidget(self.invoice_list)
+
+        invoices, error = self.db_manager.get_all_invoices(self.subscription_no)
+        if error:
+            QMessageBox.critical(self, "Error", error)
+            self.close()
+            return
+
+        # Faturaları liste olarak göster
+        self.invoice_combo = QComboBox()
+        self.invoice_combo.addItem("-- Select an Invoice --")  # Boş seçim
+        for invoice in invoices:
+            self.invoice_combo.addItem(invoice)  # Fatura bilgilerini ekle
+        layout.addWidget(self.invoice_combo)
+
+        # Silme ve iptal butonları
+        button_layout = QHBoxLayout()
+        self.delete_button = QPushButton("Delete")
+        self.delete_button.clicked.connect(self.delete_invoice)
+        button_layout.addWidget(self.delete_button)
+
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.close)
+        button_layout.addWidget(self.cancel_button)
+
+        layout.addLayout(button_layout)
+        self.setLayout(layout)
+
+    def delete_invoice(self):
+        selected_item = self.invoice_combo.currentText()
+        if selected_item == "-- Select an Invoice --":
+            QMessageBox.warning(self, "Warning", "Please select an invoice.")
+            return
+
+        # Fatura bilgilerini ayıkla
+        invoice_no = selected_item.split(",")[1].strip()  # Fatura numarasını ayıkla
+
+        # Kullanıcıdan onay al
+        reply = QMessageBox.question(
+            self, "Confirm Delete", f"Are you sure you want to delete invoice {invoice_no}?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        if reply == QMessageBox.Yes:
+            success, error = self.db_manager.delete_invoice(self.subscription_no, invoice_no)
+            if success:
+                QMessageBox.information(self, "Success", f"Invoice {invoice_no} has been deleted.")
+                self.close()
+            else:
+                QMessageBox.critical(self, "Error", error)
 
 # admin panel giriş ekranı.
 class AdminPanelWindow(QWidget):
@@ -764,3 +836,4 @@ class AdminPanelWindow(QWidget):
         layout.addWidget(label)
 
         self.setLayout(layout)
+
