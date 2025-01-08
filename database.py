@@ -308,3 +308,23 @@ class DatabaseManager:
         finally:
             if conn:
                 conn.close()
+
+    def delete_invoice(self, subscriber_no, invoice_no):
+        conn = self.create_connection()
+        if not conn:
+            return False, "Database connection failed!"
+
+        try:
+            cursor = conn.cursor()
+            query = """
+                SELECT delete_invoice(%s, %s);
+            """
+            cursor.execute(query, (subscriber_no, invoice_no))
+            conn.commit()
+            return True, "Invoice deleted successfully!"
+        except Exception as e:
+            conn.rollback()
+            return False, f"An error occurred: {e}"
+        finally:
+            if conn:
+                conn.close()
