@@ -55,15 +55,15 @@ Aşağıdaki fonksiyonlar ve tetikleyiciler projede kullanılmaktadır. Tamamlan
 - [X] **`invoice_collision_func`**: Aynı tarih ve türde fatura ekleme kontrolünü sql içinde yapan fonksiyon.
 - [X] **`invoice_collision_trig`**: Fatura çakışma kontrolü için sql içinde yapan tetikleyici.
 - [X] **`calculate_carbon_emission`**: Karbon emisyonu hesaplama fonksiyonu.
-- [ ] **`all_sub_view`**: Abonelerin birleştirilmiş görünümü.
+- [ ] **`all_sub_view`**: Admin sayfasında Abonelerin birleştirilmiş görünümünü gösteren fonksiyon.
 - [X] **`trig_invoiceInsertControl`**: Abonelik kontrolü için tetikleyici fonksiyon.
 - [X] **`get_all_individualInvoices`**: Bireysel abonenin tüm faturalarını listeleme fonksiyonu.
 - [X] **`get_all_corporateInvoices`**: Kurumsal abonenin tüm faturalarını listeleme fonksiyonu.
-- [ ] **`get_invoice`**: Abone numarasına göre fatura bilgilerini getirme fonksiyonu.
+- [X] **`get_invoice`**: Abone numarasına göre fatura bilgilerini getirme fonksiyonu.
 - [X] **`update_password`**: Kullanıcı şifresini güncelleme fonksiyonu.
 - [X] **`delete_invoice`**: Fatura silme fonksiyonu.
 - [X] **`update_invoice`**: Fatura güncelleme fonksiyonu.
-- [ ] **`get_top_spenders`**: Admin panelinde belirtilen eşik değerinden fazka fatura ödeyen aboneleri listeleme fonksiyonu.
+- [X] **`get_top_spenders`**: Admin panelinde belirtilen eşik değerinden fazka fatura ödeyen aboneleri listeleme fonksiyonu.
 ---
 
 ## **Katkıda Bulunma**
