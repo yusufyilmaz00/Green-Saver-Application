@@ -106,6 +106,26 @@ class DatabaseManager:
             return None
         finally:
             self.close_connection()
+    # kullanıcı şifresini güncelleme fonksiyonu
+    def update_password(self, subscriber_no, new_password):
+        conn = self.create_connection()
+        if not conn:
+            return False, "Database connection failed!"
+
+        try:
+            cursor = conn.cursor()
+            query = """
+                SELECT update_password(%s, %s);
+            """
+            cursor.execute(query, (subscriber_no, new_password))
+            conn.commit()
+            return True, "Password updated successfully!"
+        except Exception as e:
+            conn.rollback()
+            return False, f"An error occurred: {e}"
+        finally:
+            if conn:
+                conn.close()
 
     # bireysel abone ekleme fonksiyonu
     def insert_individual_subscriber(self, fname, lname, password, id_number, birthday, address, email, phone_number):
