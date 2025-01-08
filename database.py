@@ -328,3 +328,25 @@ class DatabaseManager:
         finally:
             if conn:
                 conn.close()
+
+    def update_invoice(self, invoice_no, invoice_type, invoice_amount, consumption_amount):
+        conn = self.create_connection()
+        if not conn:
+            return False, "Database connection failed!"
+
+        try:
+            cursor = conn.cursor()
+            query = """
+                SELECT update_invoice(%s, %s, %s, %s);
+            """
+            cursor.execute(query, (invoice_no, invoice_type, invoice_amount, consumption_amount))
+            conn.commit()
+            return True, "Invoice updated successfully!"
+        except Exception as e:
+            conn.rollback()
+            print(f"Database error in update_invoice: {e}")
+            return False, f"An error occurred: {e}"
+        finally:
+            if conn:
+                conn.close()
+

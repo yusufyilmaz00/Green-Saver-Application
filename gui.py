@@ -553,15 +553,18 @@ class MainAppWindow(QWidget):
         self.button1 = QPushButton("Insert Invoice")
         self.button1.clicked.connect(self.insert_invoice)
         
-        self.button2 = QPushButton("Calculate Carbon Emission")  # Yeni buton
+        self.button2 = QPushButton("Calculate Carbon Emission")
         self.button2.clicked.connect(self.open_carbon_emission_window)
 
-        self.button3 = QPushButton("Show My Invoices")  # Yeni buton
+        self.button3 = QPushButton("Show My Invoices")
         self.button3.clicked.connect(self.show_invoice_window)
 
-        self.button4 = QPushButton("Delete Invoice")  # Yeni buton
+        self.button4 = QPushButton("Delete Invoice")
         self.button4.clicked.connect(self.open_delete_invoice_window)
         
+        self.button5 = QPushButton("Update Invoice")
+        self.button5.clicked.connect(self.open_update_invoice_window)
+
         self.buttonX = QPushButton("Logout")
         self.buttonX.clicked.connect(self.logout)
 
@@ -569,6 +572,7 @@ class MainAppWindow(QWidget):
         layout.addWidget(self.button2)  
         layout.addWidget(self.button3)
         layout.addWidget(self.button4)
+        layout.addWidget(self.button5)
         layout.addWidget(self.buttonX)
 
         self.setLayout(layout)
@@ -601,6 +605,10 @@ class MainAppWindow(QWidget):
     def open_delete_invoice_window(self):
         dialog = DeleteInvoiceDialog(self.db_manager, self.subscription_no)
         dialog.exec_()
+
+    def open_update_invoice_window(self):
+        dialog = UpdateInvoiceDialog(self.db_manager, self.subscription_no, self.subscriber_type)
+        dialog.exec_()    
 
     def logout(self):
         QMessageBox.information(self, "Logout", "You have been logged out.")
@@ -821,6 +829,100 @@ class DeleteInvoiceDialog(QDialog):
                 self.close()
             else:
                 QMessageBox.critical(self, "Error", error)
+
+class UpdateInvoiceDialog(QDialog):
+    def __init__(self, db_manager, subscription_no, subscriber_type):
+        super().__init__()
+        self.db_manager = db_manager
+        self.subscription_no = subscription_no
+        self.subscriber_type = subscriber_type
+        self.selected_invoice_no = None
+
+        self.setWindowTitle("Update Invoice")
+        self.setGeometry(300, 300, 600, 400)
+        self.setWindowModality(Qt.ApplicationModal)
+
+        layout = QVBoxLayout()
+
+        # Faturaları listele
+        self.invoice_combo = QComboBox()
+        self.invoice_combo.addItem("-- Select an Invoice --")
+        invoices, error = self.db_manager.get_all_invoices(subscription_no)
+        if error:
+            QMessageBox.critical(self, "Error", error)
+            self.close()
+            return
+
+        # Faturaları combobox'a ekle
+        for invoice in invoices:
+            self.invoice_combo.addItem(invoice)
+        layout.addWidget(QLabel("Select Invoice:"))
+        layout.addWidget(self.invoice_combo)
+
+        # Yeni fatura türü seçimi
+        self.invoice_type_combo = QComboBox()
+        self.invoice_type_combo.addItems(["Electricity", "Natural Gas", "Water"])
+        layout.addWidget(QLabel("Select New Invoice Type:"))
+        layout.addWidget(self.invoice_type_combo)
+
+        # Yeni tüketim miktarı
+        self.consumption_input = QLineEdit()
+        self.consumption_input.setPlaceholderText("Enter new consumption amount (Optional)")
+        layout.addWidget(QLabel("New Consumption Amount:"))
+        layout.addWidget(self.consumption_input)
+
+        # Butonlar
+        button_layout = QHBoxLayout()
+        self.update_button = QPushButton("Update")
+        self.update_button.clicked.connect(self.update_invoice)
+        button_layout.addWidget(self.update_button)
+
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.close)
+        button_layout.addWidget(self.cancel_button)
+
+        layout.addLayout(button_layout)
+        self.setLayout(layout)
+
+    def update_invoice(self):
+        try:
+            selected_invoice = self.invoice_combo.currentText()
+            if selected_invoice == "-- Select an Invoice --":
+                QMessageBox.warning(self, "Warning", "Please select an invoice.")
+                return
+
+            invoice_no = int(selected_invoice.split(",")[1].strip())  # Fatura numarasını al
+            new_type = self.invoice_type_combo.currentText()
+            new_consumption = self.consumption_input.text()
+
+            if not new_consumption:
+                # Mevcut tüketim miktarını al
+                new_consumption = self.db_manager.get_current_consumption(invoice_no)
+                if not new_consumption:
+                    QMessageBox.warning(self, "Error", "Failed to fetch current consumption amount.")
+                    return
+
+            # Fatura miktarını hesapla
+            invoice_amount, error = self.db_manager.calculate_invoice_amount(
+                new_type, float(new_consumption), self.subscriber_type
+            )
+            if error:
+                QMessageBox.critical(self, "Error", error)
+                return
+
+            # Faturayı güncelle
+            success, message = self.db_manager.update_invoice(invoice_no, new_type, invoice_amount, float(new_consumption))
+            if success:
+                QMessageBox.information(self, "Success", message)
+                self.close()
+            else:
+                QMessageBox.critical(self, "Error", message)
+
+        except Exception as e:
+            # Hataları yazdır ve kullanıcıya göster
+            print(f"An error occurred: {e}")
+            QMessageBox.critical(self, "Critical Error", str(e))
+
 
 # admin panel giriş ekranı.
 class AdminPanelWindow(QWidget):
