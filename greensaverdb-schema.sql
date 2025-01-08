@@ -303,3 +303,11 @@ BEGIN
    END IF;
 END;
 $$ LANGUAGE plpgsql;
+
+create or replace function update_invoice(invoiceNo integer, invoiceType varchar(15),invoiceAmount numeric,consumptAmount numeric)
+RETURNS VOID AS $$
+BEGIN
+UPDATE invoice i set  i.invoicetype = invoiceType, i.consumptionamount=consumptAmount, i.invoiceamount=invoiceAmount
+WHERE i.invoiceno = invoiceNo;
+END;
+$$ LANGUAGE plpgsql;
