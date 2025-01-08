@@ -188,7 +188,6 @@ EXECUTE PROCEDURE invoice_collision_func();
 
 CREATE TYPE carbon_emission_record AS (
     invoice_no INTEGER,
-    invoice_date DATE,
     carbon_emission NUMERIC
 );
 CREATE OR REPLACE FUNCTION calculate_carbon_emission(p_subscriptionNo INTEGER)
@@ -199,7 +198,6 @@ BEGIN
     FOR emission_record IN
         SELECT 
             i.invoiceNo AS invoice_no,
-            i.invoiceDate AS invoice_date,
             i.consumptionAmount * e.carbonEmission AS carbon_emission
         FROM 
             invoice i
