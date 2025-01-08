@@ -350,7 +350,7 @@ BEGIN
            avg(invoiceAmount) AS avg_invoice_amount
     FROM invoice
     GROUP BY subNumber
-    HAVING avg(invoiceAmount) > 500;
+    HAVING avg(invoiceAmount) > 20;
 END;
 $$ LANGUAGE plpgsql;
 
