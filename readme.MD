@@ -61,9 +61,9 @@ Aşağıdaki fonksiyonlar ve tetikleyiciler projede kullanılmaktadır. Tamamlan
 - [X] **`get_all_corporateInvoices`**: Kurumsal abonenin tüm faturalarını listeleme fonksiyonu.
 - [ ] **`get_invoice`**: Abone numarasına göre fatura bilgilerini getirme fonksiyonu.
 - [X] **`update_password`**: Kullanıcı şifresini güncelleme fonksiyonu.
-- [ ] **`delete_invoice`**: Fatura silme fonksiyonu.
-- [ ] **`update_invoice`**: Fatura güncelleme fonksiyonu.
-- [ ] **`get_top_spenders`**: En çok fatura ödeyen aboneleri listeleme fonksiyonu.
+- [X] **`delete_invoice`**: Fatura silme fonksiyonu.
+- [X] **`update_invoice`**: Fatura güncelleme fonksiyonu.
+- [ ] **`get_top_spenders`**: Admin panelinde belirtilen eşik değerinden fazka fatura ödeyen aboneleri listeleme fonksiyonu.
 ---
 
 ## **Katkıda Bulunma**
