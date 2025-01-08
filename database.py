@@ -350,3 +350,22 @@ class DatabaseManager:
             if conn:
                 conn.close()
 
+    def get_top_spenders(self):
+        conn = self.create_connection()
+        if not conn:
+            return None, "Database connection failed!"
+
+        try:
+            cursor = conn.cursor()
+            query = "SELECT * FROM get_top_spenders();"
+            cursor.execute(query)
+            results = cursor.fetchall()  # Tüm sonuçları al
+            return results, None
+        except Exception as e:
+            print(f"Database error in get_top_spenders: {e}")
+            return None, f"An error occurred: {e}"
+        finally:
+            if conn:
+                conn.close()
+
+

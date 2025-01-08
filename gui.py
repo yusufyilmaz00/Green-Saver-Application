@@ -937,5 +937,57 @@ class AdminPanelWindow(QWidget):
         label.setStyleSheet("font-size: 16px; font-weight: bold;")
         layout.addWidget(label)
 
+        # "Get Top Spenders" butonunu ekle
+        self.get_top_spenders_button = QPushButton("Get Top Spenders")
+        self.get_top_spenders_button.clicked.connect(self.open_top_spenders_window)
+        layout.addWidget(self.get_top_spenders_button)
+
         self.setLayout(layout)
 
+    def open_top_spenders_window(self):
+        dialog = TopSpendersDialog()
+        dialog.exec_()
+
+class TopSpendersDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Top Spenders")
+        self.setGeometry(300, 300, 600, 400)
+        self.setWindowModality(Qt.ApplicationModal)  # Diğer pencereleri kilitle
+
+        layout = QVBoxLayout()
+
+        # Başlık
+        label = QLabel("Top Spenders (Avg Invoice > 20):")
+        label.setStyleSheet("font-size: 14px; font-weight: bold;")
+        layout.addWidget(label)
+
+        # Tablo
+        self.table = QTableWidget()
+        self.table.setColumnCount(2)
+        self.table.setHorizontalHeaderLabels(["Subscriber Number", "Average Invoice Amount"])
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        layout.addWidget(self.table)
+
+        # Veritabanından verileri al ve tabloyu güncelle
+        self.populate_table()
+
+        # Pencereyi kapatmak için bir buton
+        close_button = QPushButton("Close")
+        close_button.clicked.connect(self.close)
+        layout.addWidget(close_button)
+
+        self.setLayout(layout)
+
+    def populate_table(self):
+        db_manager = DatabaseManager()
+        results, error = db_manager.get_top_spenders()
+
+        if error:
+            QMessageBox.critical(self, "Error", error)
+            return
+
+        self.table.setRowCount(len(results))
+        for row_idx, (sub_number, avg_invoice_amount) in enumerate(results):
+            self.table.setItem(row_idx, 0, QTableWidgetItem(str(sub_number)))
+            self.table.setItem(row_idx, 1, QTableWidgetItem(f"{avg_invoice_amount:.2f}"))
