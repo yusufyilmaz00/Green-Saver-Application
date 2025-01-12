@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import (
     QDateEdit, QTableWidget, QTableWidgetItem, QHeaderView
 )    
 from PyQt5.QtCore import QDate,Qt
+from PyQt5.QtGui import QIcon
 from database import DatabaseManager
 from datetime import datetime
 
@@ -17,7 +18,8 @@ class MainWindow(QMainWindow):
 
         # Ana pencere düzeni
         layout = QVBoxLayout()
-
+        # Ana pencere icon (PNG türünde)
+        self.setWindowIcon(QIcon("app_icon.png"))
         # Başlık
         title_label = QLabel("Reduce Your Consumption, Save Your Wallet!\nWelcome to the Green Saver System!")
         title_label.setAlignment(Qt.AlignCenter)
@@ -128,7 +130,7 @@ class LoginWindow(QWidget):
         self.setWindowTitle("Login")
         self.setGeometry(200, 200, 400, 300)
         self.setWindowModality(Qt.ApplicationModal)  # Diğer pencereleri kilitler.
-
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
         # Form layout for user input
         form_layout = QFormLayout()
 
@@ -209,7 +211,7 @@ class PasswordUpdateDialog(QDialog):
         self.setWindowTitle("Reset Password")
         self.setGeometry(300, 300, 400, 300)
         self.setWindowModality(Qt.ApplicationModal)  # Modal pencere
-
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
         # Form layout
         layout = QVBoxLayout()
         form_layout = QFormLayout()
@@ -296,7 +298,7 @@ class AdminLoginWindow(QWidget):
         self.setWindowTitle("Admin Login")
         self.setGeometry(300, 300, 400, 200)
         self.setWindowModality(Qt.ApplicationModal)  # Diğer pencereleri kilitler
-
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
         # Kullanıcı adı ve şifre
         self.correct_username = "admin"
         self.correct_password = "1111"
@@ -364,11 +366,11 @@ class IndividualWindow(QWidget):
 
         self.setWindowTitle("Individual Subscription")
         self.setGeometry(200, 200, 400, 500)
-        self.setWindowModality(Qt.ApplicationModal) # diğer pencereleri kilitler.
-
+        self.setWindowModality(Qt.ApplicationModal) # diğer pencereleri kilitler.   
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
         # Form layout for user input
         form_layout = QFormLayout()
-
+        
         # Input fields
         self.firstname_input = QLineEdit()
         self.lastname_input = QLineEdit()
@@ -477,6 +479,7 @@ class CorporateWindow(QWidget):
         self.setWindowTitle("Corporate Subscription")
         self.setGeometry(200, 200, 400, 600)
         self.setWindowModality(Qt.ApplicationModal) # diğer pencereleri kilitler.
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
 
         # Form layout for user input
         form_layout = QFormLayout()
@@ -602,6 +605,7 @@ class MainAppWindow(QWidget):
 
         self.setWindowTitle("Main Application")
         self.setGeometry(200, 200, 600, 500)
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
 
         layout = QVBoxLayout()
 
@@ -772,6 +776,7 @@ class InvoiceDialog(QDialog):
 
         self.setWindowTitle("Invoice Insert")
         self.setGeometry(100, 100, 300, 200)
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
 
         # Pencereyi modal yaparak diğer pencereleri kilitler.
         self.setWindowModality(Qt.ApplicationModal)
@@ -851,7 +856,7 @@ class CarbonEmissionDialog(QDialog):
         self.setWindowTitle("Carbon Emission")
         self.setGeometry(200, 200, 600, 400)
         self.setWindowModality(Qt.ApplicationModal) # diğer pencereleri kilitler.
-
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
         # Tablo widget
         self.table = QTableWidget()
         self.table.setColumnCount(2)
@@ -886,7 +891,8 @@ class AllInvoiceMessagesWindow(QWidget):
         self.setWindowTitle("My Invoices")
         self.setGeometry(300, 300, 600, 400)
         self.setWindowModality(Qt.ApplicationModal)  # Modal pencere
-
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
+        
         layout = QVBoxLayout()
 
         label = QLabel("Your Invoices:")
@@ -923,7 +929,7 @@ class DeleteInvoiceDialog(QDialog):
         self.setWindowTitle("Delete Invoice")
         self.setGeometry(300, 300, 600, 400)
         self.setWindowModality(Qt.ApplicationModal)  # Modal pencere
-
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
         layout = QVBoxLayout()
 
         # Faturaları göster
@@ -989,6 +995,7 @@ class UpdateInvoiceDialog(QDialog):
         self.setWindowTitle("Update Invoice")
         self.setGeometry(300, 300, 600, 400)
         self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
 
         layout = QVBoxLayout()
 
@@ -1080,6 +1087,7 @@ class ShowInvoiceDialog(QDialog):
         self.setWindowTitle("Show Invoice")
         self.setGeometry(300, 300, 400, 300)
         self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
 
         layout = QVBoxLayout()
 
@@ -1150,6 +1158,7 @@ class CompareTwoMonthInvoiceDialog(QDialog):
         self.setWindowTitle("Compare Last Two Months")
         self.setGeometry(300, 300, 400, 200)
         self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
 
         layout = QVBoxLayout()
 
@@ -1204,6 +1213,7 @@ class CompareAllTimeInvoicesDialog(QDialog):
         self.setWindowTitle("Compare All-Time Invoices")
         self.setGeometry(300, 300, 400, 200)
         self.setWindowModality(Qt.ApplicationModal)
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
 
         layout = QVBoxLayout()
 
@@ -1258,6 +1268,7 @@ class AdminPanelWindow(QWidget):
 
         self.setWindowTitle("Admin Panel")
         self.setGeometry(300, 300, 600, 400)
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
 
         # Ana layout
         layout = QVBoxLayout()
@@ -1341,7 +1352,7 @@ class TopSpendersDialog(QDialog):
         self.setWindowTitle("Top Spenders")
         self.setGeometry(300, 300, 600, 400)
         self.setWindowModality(Qt.ApplicationModal)  # Diğer pencereleri kilitle
-
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
         layout = QVBoxLayout()
 
         # Başlık
@@ -1385,7 +1396,7 @@ class AllSubscribersDialog(QDialog):
         self.setWindowTitle("All Subscribers")
         self.setGeometry(300, 300, 600, 400)
         self.setWindowModality(Qt.ApplicationModal)
-
+        self.setWindowIcon(QIcon("app_icon.png")) # Ana pencere icon (PNG türünde)
         layout = QVBoxLayout()
 
         # Başlık
