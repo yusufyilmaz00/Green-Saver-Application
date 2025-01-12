@@ -1044,13 +1044,14 @@ class CompareTwoMonthInvoiceDialog(QDialog):
                 return
 
             # Veritabanından karşılaştırmayı yap
-            result, error = self.db_manager.compare_last_two_months(self.subscription_no, selected_type)
+            difference, message, error = self.db_manager.compare_last_two_months_with_message(self.subscription_no, selected_type)
+            
             if error:
                 QMessageBox.critical(self, "Error", error)
-            elif result is None:
+            elif difference is None:
                 QMessageBox.information(self, "No Data", "No invoices found for the last two months.")
             else:
-                QMessageBox.information(self, "Comparison Result", f"The difference in consumption: {result}")
+                QMessageBox.information(self, "Comparison Result", f"Difference: {difference}\n\n{message}")
             
             self.close()
         except Exception as e:

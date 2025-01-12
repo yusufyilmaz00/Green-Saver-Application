@@ -1,4 +1,4 @@
-import psycopg2
+import psycopg2,random
 
 class DatabaseManager:
 
@@ -388,10 +388,50 @@ class DatabaseManager:
             if conn:
                 conn.close()
 
-    def compare_last_two_months(self, subscriber_no, invoice_type):
+    # Öneri mesajlarını tanımlayan yapı
+    recommendation_messages = {
+        "high_usage": [
+            "Your recent usage is significantly higher. Consider reducing unnecessary consumption.",
+            "Energy-saving tips: Turn off unused appliances to lower your bill.",
+            "Your energy usage has increased! Inspect possible leaks or inefficiencies."
+        ],
+        "low_usage": [
+            "Good job! Your usage has decreased compared to the previous month.",
+            "Keep up the energy-efficient habits to save even more.",
+            "Your reduced consumption is great for both your wallet and the environment."
+        ],
+        "equal_usage": [
+            "Your consumption is consistent. Consider optimizing further to save costs."
+        ]
+    }
+
+    # Yeni öneri mesajı fonksiyonu
+    def get_recommendation_message(self, consumption_difference):
+        """
+        Fatura tüketim farkına göre öneri mesajını döndürür.
+        :param consumption_difference: İki fatura arasındaki tüketim farkı
+        :return: Rastgele bir öneri mesajı
+        """
+        if consumption_difference > 0:  # Fazla tüketim
+            messages = self.recommendation_messages["high_usage"]
+        elif consumption_difference < 0:  # Az tüketim
+            messages = self.recommendation_messages["low_usage"]
+        else:  # Eşit tüketim
+            messages = self.recommendation_messages["equal_usage"]
+            return messages[0]  # Sabit mesaj döndür
+
+        return random.choice(messages)  # Rastgele mesaj seç
+    
+    def compare_last_two_months_with_message(self, subscriber_no, invoice_type):
+        """
+        Son iki faturayı karşılaştırır ve bir öneri mesajı döndürür.
+        :param subscriber_no: Abone numarası
+        :param invoice_type: Fatura türü
+        :return: (fatura farkı, öneri mesajı), hata
+        """
         conn = self.create_connection()
         if not conn:
-            return None, "Database connection failed!"
+            return None, None, "Database connection failed!"
 
         try:
             cursor = conn.cursor()
@@ -399,9 +439,17 @@ class DatabaseManager:
                 SELECT last_two_months_invoice(%s, %s);
             """
             cursor.execute(query, (subscriber_no, invoice_type))
-            result = cursor.fetchone()  # Sonuç döndür
-            return result[0] if result else None, None
+            result = cursor.fetchone()
+
+            if not result:
+                return None, None, "No invoice data found for the given subscriber and type."
+
+            consumption_difference = result[0]
+            recommendation_message = self.get_recommendation_message(consumption_difference)
+
+            return consumption_difference, recommendation_message, None
         except Exception as e:
-            return None, f"An error occurred: {e}"
+            return None, None, f"An error occurred: {e}"
         finally:
             self.close_connection()
+
