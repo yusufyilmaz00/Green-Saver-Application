@@ -15,28 +15,45 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Database Project")
         self.setGeometry(100, 100, 400, 300)
 
-        # Main window layout
+        # Ana pencere düzeni
         layout = QVBoxLayout()
 
-        # Buttons
+        # Başlık
+        title_label = QLabel("Welcome to the Database Project")
+        title_label.setAlignment(Qt.AlignCenter)
+        title_label.setStyleSheet("font-size: 18px; font-weight: bold; margin-bottom: 20px;")
+        layout.addWidget(title_label)
+
+        # Butonlar
         self.login_button = QPushButton("Subscriber Login")
         self.admin_login_button = QPushButton("Admin Login")
         self.register_corporate_button = QPushButton("Register Corporate Subscription")
         self.register_individual_button = QPushButton("Register Individual Subscription")
+        self.exit_button = QPushButton("Exit Program")  # Çıkış butonu
 
-        # Button click events
+        # Buton stilleri
+        button_style = "font-size: 14px; padding: 8px; margin: 5px;"
+        self.login_button.setStyleSheet(button_style)
+        self.admin_login_button.setStyleSheet(button_style)
+        self.register_corporate_button.setStyleSheet(button_style)
+        self.register_individual_button.setStyleSheet(button_style)
+        self.exit_button.setStyleSheet(button_style)
+
+        # Buton olayları
         self.login_button.clicked.connect(self.open_login_window)
+        self.admin_login_button.clicked.connect(self.open_admin_login_window)
         self.register_corporate_button.clicked.connect(self.open_corporate_window)
         self.register_individual_button.clicked.connect(self.open_individual_window)
-        self.admin_login_button.clicked.connect(self.open_admin_login_window)
+        self.exit_button.clicked.connect(self.close_application)
 
-        # Add buttons to layout
+        # Butonları düzenlemeye ekle
         layout.addWidget(self.login_button)
         layout.addWidget(self.admin_login_button)
         layout.addWidget(self.register_corporate_button)
         layout.addWidget(self.register_individual_button)
+        layout.addWidget(self.exit_button)
 
-        # Set layout to main window
+        # Layout'u pencereye ata
         container = QWidget()
         container.setLayout(layout)
         self.setCentralWidget(container)
@@ -56,6 +73,12 @@ class MainWindow(QMainWindow):
     def open_individual_window(self):
         self.register_individual_window = IndividualWindow()
         self.register_individual_window.show()
+
+    def close_application(self):
+        reply = QMessageBox.question(self, "Exit Program", "Are you sure you want to exit?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.close()
 
 #Kullanıcı giriş ekranı.
 class LoginWindow(QWidget):
@@ -1129,21 +1152,46 @@ class AdminPanelWindow(QWidget):
         self.setWindowTitle("Admin Panel")
         self.setGeometry(300, 300, 600, 400)
 
+        # Ana layout
         layout = QVBoxLayout()
+
+        # Hoş geldiniz yazısı
         label = QLabel("Welcome to the Admin Panel!")
-        label.setStyleSheet("font-size: 16px; font-weight: bold;")
+        label.setAlignment(Qt.AlignCenter)  # Ortalıyoruz
+        label.setStyleSheet("font-size: 18px; font-weight: bold; margin-bottom: 20px;")
         layout.addWidget(label)
 
-        # "Get Top Spenders" butonunu ekle
-        self.get_top_spenders_button = QPushButton("Get Top Spenders")
-        self.get_top_spenders_button.clicked.connect(self.open_top_spenders_window)
-        layout.addWidget(self.get_top_spenders_button)
+        # Butonları merkezi bir widget içinde düzenle
+        button_layout = QVBoxLayout()
 
+        # "Get Top Spenders" butonu
+        self.get_top_spenders_button = QPushButton("Get Top Spenders")
+        self.get_top_spenders_button.setFixedSize(200, 40)
+        self.get_top_spenders_button.clicked.connect(self.open_top_spenders_window)
+        button_layout.addWidget(self.get_top_spenders_button, alignment=Qt.AlignCenter)
+
+        # "Çıkış Yap" butonu
+        self.exit_button = QPushButton("Logout")
+        self.exit_button.setFixedSize(200, 40)
+        self.exit_button.clicked.connect(self.close_admin_panel)
+        button_layout.addWidget(self.exit_button, alignment=Qt.AlignCenter)
+
+        # Buton layout'unu ana layout'a ekle
+        layout.addLayout(button_layout)
+
+        # Layout'u pencereye ata
         self.setLayout(layout)
 
     def open_top_spenders_window(self):
         dialog = TopSpendersDialog()
         dialog.exec_()
+
+    def close_admin_panel(self):
+        reply = QMessageBox.question(self, "Confirm Logout", "Are you sure you want to logout?",
+                                     QMessageBox.Yes | QMessageBox.No, QMessageBox.No)
+        if reply == QMessageBox.Yes:
+            self.close()
+
 
 class TopSpendersDialog(QDialog):
     def __init__(self):
