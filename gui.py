@@ -550,7 +550,7 @@ class MainAppWindow(QWidget):
         layout.addWidget(welcome_label)
 
         # Diğer butonlar
-        self.button1 = QPushButton("Insert Invoice")
+        self.button1 = QPushButton("Add Invoice")
         self.button1.clicked.connect(self.insert_invoice)
         
         self.button2 = QPushButton("Calculate Carbon Emission")
@@ -568,7 +568,7 @@ class MainAppWindow(QWidget):
         self.button6 = QPushButton("Show Invoice")
         self.button6.clicked.connect(self.open_show_invoice_window)
 
-        self.button7 = QPushButton("Compare Last Two Month Invoices")
+        self.button7 = QPushButton("Compare Monthly Invoices")
         self.button7.clicked.connect(self.open_compare_two_month_invoice_window)
 
         self.button8 = QPushButton("Compare All-Time Invoices")
@@ -578,11 +578,11 @@ class MainAppWindow(QWidget):
         self.buttonX.clicked.connect(self.logout)
 
         layout.addWidget(self.button1)
-        layout.addWidget(self.button2)  
-        layout.addWidget(self.button3)
         layout.addWidget(self.button4)
         layout.addWidget(self.button5)
         layout.addWidget(self.button6)
+        layout.addWidget(self.button3)
+        layout.addWidget(self.button2)
         layout.addWidget(self.button7)
         layout.addWidget(self.button8) 
         layout.addWidget(self.buttonX)
