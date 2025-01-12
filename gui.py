@@ -571,6 +571,9 @@ class MainAppWindow(QWidget):
         self.button7 = QPushButton("Compare Last Two Month Invoices")
         self.button7.clicked.connect(self.open_compare_two_month_invoice_window)
 
+        self.button8 = QPushButton("Compare All-Time Invoices")
+        self.button8.clicked.connect(self.open_compare_all_time_invoices_window)
+
         self.buttonX = QPushButton("Logout")
         self.buttonX.clicked.connect(self.logout)
 
@@ -580,7 +583,8 @@ class MainAppWindow(QWidget):
         layout.addWidget(self.button4)
         layout.addWidget(self.button5)
         layout.addWidget(self.button6)
-        layout.addWidget(self.button7) 
+        layout.addWidget(self.button7)
+        layout.addWidget(self.button8) 
         layout.addWidget(self.buttonX)
 
         self.setLayout(layout)
@@ -626,6 +630,9 @@ class MainAppWindow(QWidget):
         dialog = CompareTwoMonthInvoiceDialog(self.db_manager, self.subscription_no)
         dialog.exec_()
 
+    def open_compare_all_time_invoices_window(self):
+        dialog = CompareAllTimeInvoicesDialog(self.db_manager, self.subscription_no)
+        dialog.exec_()
 
     def logout(self):
         QMessageBox.information(self, "Logout", "You have been logged out.")
@@ -1044,19 +1051,75 @@ class CompareTwoMonthInvoiceDialog(QDialog):
                 return
 
             # Veritabanından karşılaştırmayı yap
-            difference, message, error = self.db_manager.compare_last_two_months_with_message(self.subscription_no, selected_type)
+            difference , message, error = self.db_manager.compare_last_two_months_with_message(self.subscription_no, selected_type)
             
             if error:
                 QMessageBox.critical(self, "Error", error)
             elif difference is None:
                 QMessageBox.information(self, "No Data", "No invoices found for the last two months.")
             else:
-                QMessageBox.information(self, "Comparison Result", f"Difference: {difference}\n\n{message}")
+                QMessageBox.information(self, "Recommendation:\n ", message)
             
             self.close()
         except Exception as e:
             print(f"An error occurred: {e}")
             QMessageBox.critical(self, "Critical Error", str(e))
+
+class CompareAllTimeInvoicesDialog(QDialog):
+    def __init__(self, db_manager, subscription_no):
+        super().__init__()
+        self.db_manager = db_manager
+        self.subscription_no = subscription_no
+
+        self.setWindowTitle("Compare All-Time Invoices")
+        self.setGeometry(300, 300, 400, 200)
+        self.setWindowModality(Qt.ApplicationModal)
+
+        layout = QVBoxLayout()
+
+        # Fatura türü seçimi
+        self.invoice_type_combo = QComboBox()
+        self.invoice_type_combo.addItems(["Electricity", "Natural Gas", "Water"])
+        layout.addWidget(QLabel("Select Invoice Type:"))
+        layout.addWidget(self.invoice_type_combo)
+
+        # Butonlar
+        button_layout = QHBoxLayout()
+        self.compare_button = QPushButton("Compare")
+        self.compare_button.clicked.connect(self.compare_all_time_invoices)
+        button_layout.addWidget(self.compare_button)
+
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.close)
+        button_layout.addWidget(self.cancel_button)
+
+        layout.addLayout(button_layout)
+        self.setLayout(layout)
+
+    def compare_all_time_invoices(self):
+        try:
+            selected_type = self.invoice_type_combo.currentText()
+
+            if not selected_type:
+                QMessageBox.warning(self, "Warning", "Please select an invoice type.")
+                return
+
+            # Veritabanından tüm zamanların ortalamasını hesaplayıp öneri mesajı al
+            _, message, error = self.db_manager.compare_all_time_average_with_message(self.subscription_no, selected_type)
+
+            if error:
+                QMessageBox.critical(self, "Error", error)
+            elif message is None:
+                QMessageBox.information(self, "No Data", "No invoices found for the selected type.")
+            else:
+                # Öneri mesajını göster
+                QMessageBox.information(self, "Recommendation", message)
+
+            self.close()
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            QMessageBox.critical(self, "Critical Error", str(e))
+    
 
 # admin panel giriş ekranı.
 class AdminPanelWindow(QWidget):
