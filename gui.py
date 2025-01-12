@@ -28,41 +28,54 @@ class MainWindow(QMainWindow):
         button_width = 250
         button_height = 50
 
-        # Butonlar
+        # Giriş ve Yönetici Girişi Butonları (Farklı Arka Plan Renkleri)
         self.login_button = QPushButton("Subscriber Login")
         self.admin_login_button = QPushButton("Admin Login")
+
+        # Kayıt Butonları (Farklı Arka Plan Renkleri)
         self.register_corporate_button = QPushButton("Register Corporate Subscription")
         self.register_individual_button = QPushButton("Register Individual Subscription")
-        self.exit_button = QPushButton("Exit Program")  # Çıkış butonu
 
-        # Tüm butonlar için boyut ve stil
-        button_style = """
+        # Çıkış Butonu
+        self.exit_button = QPushButton("Exit Program")
+
+        # Stil Ayarları
+        login_button_style = """
             font-size: 14px;
             padding: 10px;
-            border: 2px solid #000000;  /* Siyah çerçeve */
+            border: 2px solid #000000; /* Siyah çerçeve*/
             border-radius: 8px;
+            background-color: #AED6F1;  /* Hafif mavi */
         """
-        self.login_button.setFixedSize(button_width, button_height)
-        self.login_button.setStyleSheet(button_style)
-
-        self.admin_login_button.setFixedSize(button_width, button_height)
-        self.admin_login_button.setStyleSheet(button_style)
-
-        self.register_corporate_button.setFixedSize(button_width, button_height)
-        self.register_corporate_button.setStyleSheet(button_style)
-
-        self.register_individual_button.setFixedSize(button_width, button_height)
-        self.register_individual_button.setStyleSheet(button_style)
-
-        # Çıkış butonu için özel stil
+        register_button_style = """
+            font-size: 14px;
+            padding: 10px;
+            border: 2px solid #000000; /* Siyah çerçeve*/
+            border-radius: 8px;
+            background-color: #F9E79F;  /* Hafif sarı */
+        """
         exit_button_style = """
             font-size: 14px;
             padding: 10px;
-            border: 2px solid #FF0000;  /* Kırmızı çerçeve */
+            border: 2px solid #000000; /* Siyah çerçeve*/
             border-radius: 8px;
             background-color: red;
             color: white;
         """
+
+        # Buton Stillerini Uygula
+        self.login_button.setFixedSize(button_width, button_height)
+        self.login_button.setStyleSheet(login_button_style)
+
+        self.admin_login_button.setFixedSize(button_width, button_height)
+        self.admin_login_button.setStyleSheet(login_button_style)
+
+        self.register_corporate_button.setFixedSize(button_width, button_height)
+        self.register_corporate_button.setStyleSheet(register_button_style)
+
+        self.register_individual_button.setFixedSize(button_width, button_height)
+        self.register_individual_button.setStyleSheet(register_button_style)
+
         self.exit_button.setFixedSize(button_width, button_height)
         self.exit_button.setStyleSheet(exit_button_style)
 
