@@ -55,6 +55,13 @@ SELECT insert_invoice('2023-02-05', 100000006, 'Water', 78.60, 184.71); -- 78.60
 SELECT insert_invoice('2023-02-06', 100000007, 'Natural Gas', 220.00, 2068.00); -- 220.00 * 9.40
 SELECT insert_invoice('2023-02-07', 100000008, 'Electricity', 140.00, 439.60); -- 140.00 * 3.14
 SELECT insert_invoice('2023-02-08', 100000009, 'Water', 92.50, 217.375); -- 92.50 * 2.35
+SELECT insert_invoice('2023-02-09', 100000000, 'Electricity', 180.50, 567.57); -- 180.50 * 3.14
+SELECT insert_invoice('2023-03-10', 100000000, 'Electricity', 220.75, 692.57); -- 220.75 * 3.14
+SELECT insert_invoice('2023-02-11', 100000000, 'Water', 120.00, 282.00); -- 120.00 * 2.35
+SELECT insert_invoice('2023-04-12', 100000000, 'Water', 150.50, 353.68); -- 150.50 * 2.35
+SELECT insert_invoice('2023-02-13', 100000000, 'Natural Gas', 200.75, 1880.05); -- 200.75 * 9.40
+SELECT insert_invoice('2023-06-14', 100000000, 'Natural Gas', 250.00, 2350.00); -- 250.00 * 9.40
+SELECT insert_invoice('2023-07-15', 100000000, 'Natural Gas', 100.25, 942.35); -- 100.25 * 9.40
 
 -- Kurumsal aboneler için faturalar
 SELECT insert_invoice('2023-01-20', 100000010, 'Electricity', 1000.00, 2070.00); -- 1000.00 * 2.07
