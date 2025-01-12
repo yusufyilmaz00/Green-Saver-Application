@@ -1270,29 +1270,47 @@ class AdminPanelWindow(QWidget):
 
         # Butonları merkezi bir widget içinde düzenle
         button_layout = QVBoxLayout()
-        button_layout.setSpacing(15)  # Butonlar arası mesafeyi ayarla
+        button_layout.setSpacing(20)  # Butonlar arası mesafeyi ayarla
 
-        # Buton boyutları ve stilleri
-        button_style = "font-size: 14px; padding: 8px;"
+        # Buton boyutları
+        button_width = 200
+        button_height = 50
+
+        # Stil tanımları
+        general_button_style = """
+            font-size: 14px;
+            padding: 8px;
+            border: 2px solid #3498DB; /* Mavi çerçeve */
+            border-radius: 8px;
+            background-color: #D6EAF8; /* Hafif mavi */
+        """
+        logout_button_style = """
+            font-size: 14px;
+            padding: 8px;
+            border: 2px solid #000000; /* Siyah çerçeve */
+            border-radius: 8px;
+            background-color: red;
+            color: white;
+        """
 
         # "Get Top Spenders" butonu
         self.get_top_spenders_button = QPushButton("Get Top Spenders")
-        self.get_top_spenders_button.setFixedSize(200, 50)
-        self.get_top_spenders_button.setStyleSheet(button_style)
+        self.get_top_spenders_button.setFixedSize(button_width, button_height)
+        self.get_top_spenders_button.setStyleSheet(general_button_style)
         self.get_top_spenders_button.clicked.connect(self.open_top_spenders_window)
         button_layout.addWidget(self.get_top_spenders_button, alignment=Qt.AlignCenter)
 
         # "View All Subscribers" butonu
         self.view_all_subscribers_button = QPushButton("View All Subscribers")
-        self.view_all_subscribers_button.setFixedSize(200, 50)
-        self.view_all_subscribers_button.setStyleSheet(button_style)
+        self.view_all_subscribers_button.setFixedSize(button_width, button_height)
+        self.view_all_subscribers_button.setStyleSheet(general_button_style)
         self.view_all_subscribers_button.clicked.connect(self.open_all_subscribers_window)
         button_layout.addWidget(self.view_all_subscribers_button, alignment=Qt.AlignCenter)
 
         # "Çıkış Yap" butonu
         self.exit_button = QPushButton("Logout")
-        self.exit_button.setFixedSize(200, 50)
-        self.exit_button.setStyleSheet(button_style)
+        self.exit_button.setFixedSize(button_width, button_height)
+        self.exit_button.setStyleSheet(logout_button_style)
         self.exit_button.clicked.connect(self.close_admin_panel)
         button_layout.addWidget(self.exit_button, alignment=Qt.AlignCenter)
 
