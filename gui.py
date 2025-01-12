@@ -1163,16 +1163,29 @@ class AdminPanelWindow(QWidget):
 
         # Butonları merkezi bir widget içinde düzenle
         button_layout = QVBoxLayout()
+        button_layout.setSpacing(15)  # Butonlar arası mesafeyi ayarla
+
+        # Buton boyutları ve stilleri
+        button_style = "font-size: 14px; padding: 8px;"
 
         # "Get Top Spenders" butonu
         self.get_top_spenders_button = QPushButton("Get Top Spenders")
-        self.get_top_spenders_button.setFixedSize(200, 40)
+        self.get_top_spenders_button.setFixedSize(200, 50)
+        self.get_top_spenders_button.setStyleSheet(button_style)
         self.get_top_spenders_button.clicked.connect(self.open_top_spenders_window)
         button_layout.addWidget(self.get_top_spenders_button, alignment=Qt.AlignCenter)
 
+        # "View All Subscribers" butonu
+        self.view_all_subscribers_button = QPushButton("View All Subscribers")
+        self.view_all_subscribers_button.setFixedSize(200, 50)
+        self.view_all_subscribers_button.setStyleSheet(button_style)
+        self.view_all_subscribers_button.clicked.connect(self.open_all_subscribers_window)
+        button_layout.addWidget(self.view_all_subscribers_button, alignment=Qt.AlignCenter)
+
         # "Çıkış Yap" butonu
         self.exit_button = QPushButton("Logout")
-        self.exit_button.setFixedSize(200, 40)
+        self.exit_button.setFixedSize(200, 50)
+        self.exit_button.setStyleSheet(button_style)
         self.exit_button.clicked.connect(self.close_admin_panel)
         button_layout.addWidget(self.exit_button, alignment=Qt.AlignCenter)
 
@@ -1184,6 +1197,10 @@ class AdminPanelWindow(QWidget):
 
     def open_top_spenders_window(self):
         dialog = TopSpendersDialog()
+        dialog.exec_()
+
+    def open_all_subscribers_window(self):
+        dialog = AllSubscribersDialog()
         dialog.exec_()
 
     def close_admin_panel(self):
@@ -1236,3 +1253,48 @@ class TopSpendersDialog(QDialog):
         for row_idx, (sub_number, avg_invoice_amount) in enumerate(results):
             self.table.setItem(row_idx, 0, QTableWidgetItem(str(sub_number)))
             self.table.setItem(row_idx, 1, QTableWidgetItem(f"{avg_invoice_amount:.2f}"))
+
+class AllSubscribersDialog(QDialog):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("All Subscribers")
+        self.setGeometry(300, 300, 600, 400)
+        self.setWindowModality(Qt.ApplicationModal)
+
+        layout = QVBoxLayout()
+
+        # Başlık
+        label = QLabel("All Subscribers:")
+        label.setStyleSheet("font-size: 14px; font-weight: bold;")
+        layout.addWidget(label)
+
+        # Tablo
+        self.table = QTableWidget()
+        self.table.setColumnCount(3)
+        self.table.setHorizontalHeaderLabels(["Subscription No", "Subscriber Name", "Subscriber Type"])
+        self.table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        layout.addWidget(self.table)
+
+        # Veritabanından verileri al ve tabloyu doldur
+        self.populate_table()
+
+        # Kapatma butonu
+        close_button = QPushButton("Close")
+        close_button.clicked.connect(self.close)
+        layout.addWidget(close_button)
+
+        self.setLayout(layout)
+
+    def populate_table(self):
+        db_manager = DatabaseManager()
+        results, error = db_manager.get_all_subscribers()
+
+        if error:
+            QMessageBox.critical(self, "Error", error)
+            return
+
+        self.table.setRowCount(len(results))
+        for row_idx, (subscription_no, sub_name, sub_type) in enumerate(results):
+            self.table.setItem(row_idx, 0, QTableWidgetItem(str(subscription_no)))
+            self.table.setItem(row_idx, 1, QTableWidgetItem(sub_name))
+            self.table.setItem(row_idx, 2, QTableWidgetItem(sub_type))

@@ -487,3 +487,23 @@ class DatabaseManager:
             return None, None, f"An error occurred: {e}"
         finally:
             self.close_connection()
+
+    def get_all_subscribers(self):
+        """
+        Veritabanındaki 'all_sub_view' view'inden tüm aboneleri döndürür.
+        :return: [(subscriptionno, subName, subscribertype)], error
+        """
+        conn = self.create_connection()
+        if not conn:
+            return None, "Database connection failed!"
+
+        try:
+            cursor = conn.cursor()
+            query = "SELECT * FROM all_sub_view;"
+            cursor.execute(query)
+            results = cursor.fetchall()
+            return results, None
+        except Exception as e:
+            return None, f"An error occurred: {e}"
+        finally:
+            self.close_connection()
