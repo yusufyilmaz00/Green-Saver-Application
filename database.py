@@ -350,6 +350,35 @@ class DatabaseManager:
         finally:
             if conn:
                 conn.close()
+    def get_current_consumption(self, invoice_no):
+        """
+        Verilen fatura numarasına göre mevcut tüketim miktarını döndürür.
+        :param invoice_no: Fatura numarası
+        :return: Mevcut tüketim miktarı veya None (hata durumunda)
+        """
+        conn = self.create_connection()
+        if not conn:
+            return None, "Database connection failed!"
+
+        try:
+            cursor = conn.cursor()
+            query = """
+                SELECT consumptionAmount
+                FROM invoice
+                WHERE invoiceNo = %s;
+            """
+            cursor.execute(query, (invoice_no,))
+            result = cursor.fetchone()
+
+            if result:
+                return result[0]  # Tüketim miktarını döndür
+            else:
+                return None  # Fatura bulunamadıysa None döndür
+        except Exception as e:
+            print(f"An error occurred while fetching consumption amount: {e}")
+            return None
+        finally:
+            self.close_connection()
 
     def get_top_spenders(self):
         conn = self.create_connection()
