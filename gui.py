@@ -12,17 +12,21 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Database Project")
-        self.setGeometry(100, 100, 400, 300)
+        self.setWindowTitle("Green Saver")
+        self.setGeometry(100, 100, 400, 400)
 
         # Ana pencere düzeni
         layout = QVBoxLayout()
 
         # Başlık
-        title_label = QLabel("Welcome to the Database Project")
+        title_label = QLabel("Reduce Your Consumption, Save Your Wallet!\nWelcome to the Green Saver System!")
         title_label.setAlignment(Qt.AlignCenter)
-        title_label.setStyleSheet("font-size: 18px; font-weight: bold; margin-bottom: 20px;")
+        title_label.setStyleSheet("font-size: 18px; font-weight: bold; color: green; margin-bottom: 20px;")
         layout.addWidget(title_label)
+
+        # Buton boyutları
+        button_width = 250
+        button_height = 50
 
         # Butonlar
         self.login_button = QPushButton("Subscriber Login")
@@ -31,13 +35,36 @@ class MainWindow(QMainWindow):
         self.register_individual_button = QPushButton("Register Individual Subscription")
         self.exit_button = QPushButton("Exit Program")  # Çıkış butonu
 
-        # Buton stilleri
-        button_style = "font-size: 14px; padding: 8px; margin: 5px;"
+        # Tüm butonlar için boyut ve stil
+        button_style = """
+            font-size: 14px;
+            padding: 10px;
+            border: 2px solid #000000;  /* Siyah çerçeve */
+            border-radius: 8px;
+        """
+        self.login_button.setFixedSize(button_width, button_height)
         self.login_button.setStyleSheet(button_style)
+
+        self.admin_login_button.setFixedSize(button_width, button_height)
         self.admin_login_button.setStyleSheet(button_style)
+
+        self.register_corporate_button.setFixedSize(button_width, button_height)
         self.register_corporate_button.setStyleSheet(button_style)
+
+        self.register_individual_button.setFixedSize(button_width, button_height)
         self.register_individual_button.setStyleSheet(button_style)
-        self.exit_button.setStyleSheet(button_style)
+
+        # Çıkış butonu için özel stil
+        exit_button_style = """
+            font-size: 14px;
+            padding: 10px;
+            border: 2px solid #FF0000;  /* Kırmızı çerçeve */
+            border-radius: 8px;
+            background-color: red;
+            color: white;
+        """
+        self.exit_button.setFixedSize(button_width, button_height)
+        self.exit_button.setStyleSheet(exit_button_style)
 
         # Buton olayları
         self.login_button.clicked.connect(self.open_login_window)
@@ -47,11 +74,11 @@ class MainWindow(QMainWindow):
         self.exit_button.clicked.connect(self.close_application)
 
         # Butonları düzenlemeye ekle
-        layout.addWidget(self.login_button)
-        layout.addWidget(self.admin_login_button)
-        layout.addWidget(self.register_corporate_button)
-        layout.addWidget(self.register_individual_button)
-        layout.addWidget(self.exit_button)
+        layout.addWidget(self.login_button, alignment=Qt.AlignCenter)
+        layout.addWidget(self.admin_login_button, alignment=Qt.AlignCenter)
+        layout.addWidget(self.register_corporate_button, alignment=Qt.AlignCenter)
+        layout.addWidget(self.register_individual_button, alignment=Qt.AlignCenter)
+        layout.addWidget(self.exit_button, alignment=Qt.AlignCenter)
 
         # Layout'u pencereye ata
         container = QWidget()
