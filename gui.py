@@ -593,7 +593,6 @@ class CorporateWindow(QWidget):
 
 # Kullanıcının giriş yaptıktan sonra ulaşabileceği ana uygulama ekranı.
 class MainAppWindow(QWidget):
-
     def __init__(self, user_info, subscription_no, subscriber_type, db_manager):
         super().__init__()
 
@@ -602,53 +601,117 @@ class MainAppWindow(QWidget):
         self.db_manager = db_manager
 
         self.setWindowTitle("Main Application")
-        self.setGeometry(200, 200, 600, 400)
-        self.setWindowModality(Qt.ApplicationModal) # diğer pencereleri kilitler.
+        self.setGeometry(200, 200, 600, 500)
 
         layout = QVBoxLayout()
 
         # Kullanıcı bilgisi (Hoş geldiniz mesajı)
         welcome_label = QLabel(f"Hoşgeldiniz, {user_info}")
-        welcome_label.setStyleSheet("color: blue; font-size: 16px; font-weight: bold;")
+        welcome_label.setStyleSheet("color: blue; font-size: 18px; font-weight: bold; margin-bottom: 20px;")
         layout.addWidget(welcome_label)
 
-        # Diğer butonlar
-        self.button1 = QPushButton("Add Invoice")
-        self.button1.clicked.connect(self.insert_invoice)
-        
-        self.button2 = QPushButton("Calculate Carbon Emission")
-        self.button2.clicked.connect(self.open_carbon_emission_window)
+        # Buton boyutları
+        button_width = 250
+        button_height = 50
 
-        self.button3 = QPushButton("Show My All Invoices")
-        self.button3.clicked.connect(self.show_all_invoice_window)
+        # Stil tanımları
+        add_update_delete_style = """
+            font-size: 14px;
+            padding: 10px;
+            border: 2px solid #3498DB;  /* Mavi çerçeve */
+            border-radius: 8px;
+            background-color: #D6EAF8; /* Hafif mavi */
+        """
+        show_invoice_style = """
+            font-size: 14px;
+            padding: 10px;
+            border: 2px solid #28B463;  /* Yeşil çerçeve */
+            border-radius: 8px;
+            background-color: #D4EFDF; /* Hafif yeşil */
+        """
+        calculate_emission_style = """
+            font-size: 14px;
+            padding: 10px;
+            border: 2px solid #F1C40F;  /* Sarı çerçeve */
+            border-radius: 8px;
+            background-color: #FCF3CF; /* Hafif sarı */
+        """
+        compare_style = """
+            font-size: 14px;
+            padding: 10px;
+            border: 2px solid #8E44AD;  /* Mor çerçeve */
+            border-radius: 8px;
+            background-color: #E8DAEF; /* Hafif mor */
+        """
+        logout_style = """
+            font-size: 14px;
+            padding: 10px;
+            border: 2px solid #FF0000;  /* Kırmızı çerçeve */
+            border-radius: 8px;
+            background-color: red;
+            color: white;
+        """
+
+        # Add, Delete, Update Butonları
+        self.button1 = QPushButton("Add Invoice")
+        self.button1.setFixedSize(button_width, button_height)
+        self.button1.setStyleSheet(add_update_delete_style)
+        self.button1.clicked.connect(self.insert_invoice)
 
         self.button4 = QPushButton("Delete Invoice")
+        self.button4.setFixedSize(button_width, button_height)
+        self.button4.setStyleSheet(add_update_delete_style)
         self.button4.clicked.connect(self.open_delete_invoice_window)
-        
+
         self.button5 = QPushButton("Update Invoice")
+        self.button5.setFixedSize(button_width, button_height)
+        self.button5.setStyleSheet(add_update_delete_style)
         self.button5.clicked.connect(self.open_update_invoice_window)
 
+        # Show Invoice Butonları
         self.button6 = QPushButton("Show Invoice")
+        self.button6.setFixedSize(button_width, button_height)
+        self.button6.setStyleSheet(show_invoice_style)
         self.button6.clicked.connect(self.open_show_invoice_window)
 
+        self.button3 = QPushButton("Show My All Invoices")
+        self.button3.setFixedSize(button_width, button_height)
+        self.button3.setStyleSheet(show_invoice_style)
+        self.button3.clicked.connect(self.show_all_invoice_window)
+
+        # Calculate Carbon Emission Butonu
+        self.button2 = QPushButton("Calculate Carbon Emission")
+        self.button2.setFixedSize(button_width, button_height)
+        self.button2.setStyleSheet(calculate_emission_style)
+        self.button2.clicked.connect(self.open_carbon_emission_window)
+
+        # Compare Butonları
         self.button7 = QPushButton("Compare Monthly Invoices")
+        self.button7.setFixedSize(button_width, button_height)
+        self.button7.setStyleSheet(compare_style)
         self.button7.clicked.connect(self.open_compare_two_month_invoice_window)
 
         self.button8 = QPushButton("Compare All-Time Invoices")
+        self.button8.setFixedSize(button_width, button_height)
+        self.button8.setStyleSheet(compare_style)
         self.button8.clicked.connect(self.open_compare_all_time_invoices_window)
 
+        # Logout Butonu
         self.buttonX = QPushButton("Logout")
+        self.buttonX.setFixedSize(button_width, button_height)
+        self.buttonX.setStyleSheet(logout_style)
         self.buttonX.clicked.connect(self.logout)
 
-        layout.addWidget(self.button1)
-        layout.addWidget(self.button4)
-        layout.addWidget(self.button5)
-        layout.addWidget(self.button6)
-        layout.addWidget(self.button3)
-        layout.addWidget(self.button2)
-        layout.addWidget(self.button7)
-        layout.addWidget(self.button8) 
-        layout.addWidget(self.buttonX)
+        # Butonları layout'a ekle
+        layout.addWidget(self.button1, alignment=Qt.AlignCenter)
+        layout.addWidget(self.button4, alignment=Qt.AlignCenter)
+        layout.addWidget(self.button5, alignment=Qt.AlignCenter)
+        layout.addWidget(self.button6, alignment=Qt.AlignCenter)
+        layout.addWidget(self.button3, alignment=Qt.AlignCenter)
+        layout.addWidget(self.button2, alignment=Qt.AlignCenter)
+        layout.addWidget(self.button7, alignment=Qt.AlignCenter)
+        layout.addWidget(self.button8, alignment=Qt.AlignCenter)
+        layout.addWidget(self.buttonX, alignment=Qt.AlignCenter)
 
         self.setLayout(layout)
 
@@ -661,7 +724,6 @@ class MainAppWindow(QWidget):
         dialog = CarbonEmissionDialog(self.db_manager, self.subscription_no)
         dialog.exec_()
 
-    # Kullanıcının faturalarını gösterir.
     def show_all_invoice_window(self):
         invoices, error = self.db_manager.get_all_invoices(self.subscription_no)
 
@@ -673,7 +735,6 @@ class MainAppWindow(QWidget):
             QMessageBox.information(self, "No Data", "No invoices found.")
             return
 
-        # Faturaları yeni bir pencere içinde göster
         self.invoice_window = AllInvoiceMessagesWindow(invoices)
         self.invoice_window.show()
 
@@ -683,8 +744,8 @@ class MainAppWindow(QWidget):
 
     def open_update_invoice_window(self):
         dialog = UpdateInvoiceDialog(self.db_manager, self.subscription_no, self.subscriber_type)
-        dialog.exec_()    
-    
+        dialog.exec_()
+
     def open_show_invoice_window(self):
         dialog = ShowInvoiceDialog(self.db_manager)
         dialog.exec_()
