@@ -1111,8 +1111,14 @@ class ShowInvoiceDialog(QDialog):
     # Fatura numarasına göre sonucu gösterir.
     def show_invoice(self):
         invoice_no = self.invoice_no_input.text()
+
+        # Fatura numarasını kontrol et
         if not invoice_no or not invoice_no.isdigit():
             QMessageBox.warning(self, "Input Error", "Please enter a valid invoice number!")
+            return
+
+        if len(invoice_no) != 9:
+            QMessageBox.warning(self, "Input Error", "Invoice number must be exactly 9 digits!")
             return
 
         # Veritabanı sorgusu
