@@ -459,10 +459,10 @@ class DatabaseManager:
 
     def compare_all_time_average_with_message(self, subscriber_no, invoice_type):
         """
-        Aynı tipteki tüm faturaların ortalama tüketimini hesaplar ve öneri mesajı döndürür.
+        Son ayki fatura tüketimi ile tüm faturaların ortalama tüketimini karşılaştırır ve öneri mesajı döndürür.
         :param subscriber_no: Abone numarası
         :param invoice_type: Fatura türü
-        :return: (ortalama tüketim, öneri mesajı), hata
+        :return: (tüketim farkı, öneri mesajı), hata
         """
         conn = self.create_connection()
         if not conn:
@@ -470,19 +470,42 @@ class DatabaseManager:
 
         try:
             cursor = conn.cursor()
-            query = """
+
+            # Son ayki faturayı al
+            last_invoice_query = """
+                SELECT consumptionAmount 
+                FROM invoice i
+                WHERE i.subNumber = %s AND i.invoiceType = %s
+                ORDER BY invoiceDate DESC
+                LIMIT 1;
+            """
+            cursor.execute(last_invoice_query, (subscriber_no, invoice_type))
+            last_invoice_result = cursor.fetchone()
+
+            if not last_invoice_result or last_invoice_result[0] is None:
+                return None, None, "No recent invoice data found for the given subscriber and type."
+
+            last_consumption = last_invoice_result[0]
+
+            # Tüm faturaların ortalama tüketimini al
+            average_query = """
                 SELECT calc_all_time_avg_consumptionAmount(%s, %s);
             """
-            cursor.execute(query, (subscriber_no, invoice_type))
-            result = cursor.fetchone()
+            cursor.execute(average_query, (subscriber_no, invoice_type))
+            average_result = cursor.fetchone()
 
-            if not result or result[0] is None:
-                return None, None, "No data found for the given invoice type and subscriber."
+            if not average_result or average_result[0] is None:
+                return None, None, "No average consumption data found for the given subscriber and type."
 
-            average_consumption = result[0]
-            recommendation_message = self.get_recommendation_message(average_consumption)
+            average_consumption = average_result[0]
 
-            return average_consumption, recommendation_message, None
+            # Son ay tüketimi ile ortalama tüketim arasındaki farkı hesapla
+            consumption_difference = last_consumption - average_consumption
+
+            # Öneri mesajını al
+            recommendation_message = self.get_recommendation_message(consumption_difference)
+
+            return consumption_difference, recommendation_message, None
         except Exception as e:
             return None, None, f"An error occurred: {e}"
         finally:
