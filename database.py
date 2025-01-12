@@ -390,20 +390,25 @@ class DatabaseManager:
 
     # Öneri mesajlarını tanımlayan yapı
     recommendation_messages = {
-        "high_usage": [
-            "Your recent usage is significantly higher. Consider reducing unnecessary consumption.",
-            "Energy-saving tips: Turn off unused appliances to lower your bill.",
-            "Your energy usage has increased! Inspect possible leaks or inefficiencies."
-        ],
-        "low_usage": [
-            "Good job! Your usage has decreased compared to the previous month.",
-            "Keep up the energy-efficient habits to save even more.",
-            "Your reduced consumption is great for both your wallet and the environment."
-        ],
-        "equal_usage": [
-            "Your consumption is consistent. Consider optimizing further to save costs."
-        ]
-    }
+    "high_usage": [
+        "Your usage is too high! Your recent usage has increased noticeably. Consider small changes like turning off lights when leaving a room or fixing leaky faucets.",
+        "Your usage is too high! Higher consumption detected. Check for potential inefficiencies like running appliances unnecessarily or undetected leaks in water or gas systems.",
+        "Your usage is higher than usual. Ensure that heating and cooling systems are used efficiently, and avoid leaving them on when not needed.",
+        "Your usage is too high! Consider adopting energy-saving habits, such as using appliances during off-peak hours or minimizing hot water usage when possible."
+    ],
+    "low_usage": [
+        "Your usage is lower than before! Great job reducing your usage! Keep it up by continuing to use resources wisely and fixing any minor leaks or drafts.",
+        "Your consumption is lower than before. Maintain this trend by using only what you need and avoiding wastage.",
+        "Your usage is lower than before! You're doing well with resource conservation! Consider exploring further savings, such as using water-saving fixtures or energy-efficient appliances.",
+        "Your usage is lower than before! Reduced usage is a great achievement. You can also try simple habits like shortening shower times or unplugging unused devices to save even more."
+    ],
+    "equal_usage": [
+        "Your usage remains steady. To optimize, consider checking your home for energy or water waste opportunities, like drafts or minor leaks.",
+        "Your consumption is consistent. You might find savings by upgrading insulation, improving thermostat settings, or using water-efficient fixtures.",
+        "Your usage remains consistent! Maintaining stable usage is good! Look for opportunities to cut back further, such as switching to eco-friendly appliances or monitoring usage more closely.",
+        "Your usage remains consistent! Steady usage is a solid start. To enhance efficiency, think about scheduling routine maintenance for your systems and appliances."
+    ]
+}
 
     # Yeni öneri mesajı fonksiyonu
     def get_recommendation_message(self, consumption_difference):
@@ -418,7 +423,6 @@ class DatabaseManager:
             messages = self.recommendation_messages["low_usage"]
         else:  # Eşit tüketim
             messages = self.recommendation_messages["equal_usage"]
-            return messages[0]  # Sabit mesaj döndür
 
         return random.choice(messages)  # Rastgele mesaj seç
     
@@ -453,3 +457,33 @@ class DatabaseManager:
         finally:
             self.close_connection()
 
+    def compare_all_time_average_with_message(self, subscriber_no, invoice_type):
+        """
+        Aynı tipteki tüm faturaların ortalama tüketimini hesaplar ve öneri mesajı döndürür.
+        :param subscriber_no: Abone numarası
+        :param invoice_type: Fatura türü
+        :return: (ortalama tüketim, öneri mesajı), hata
+        """
+        conn = self.create_connection()
+        if not conn:
+            return None, None, "Database connection failed!"
+
+        try:
+            cursor = conn.cursor()
+            query = """
+                SELECT calc_all_time_avg_consumptionAmount(%s, %s);
+            """
+            cursor.execute(query, (subscriber_no, invoice_type))
+            result = cursor.fetchone()
+
+            if not result or result[0] is None:
+                return None, None, "No data found for the given invoice type and subscriber."
+
+            average_consumption = result[0]
+            recommendation_message = self.get_recommendation_message(average_consumption)
+
+            return average_consumption, recommendation_message, None
+        except Exception as e:
+            return None, None, f"An error occurred: {e}"
+        finally:
+            self.close_connection()
