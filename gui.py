@@ -568,6 +568,9 @@ class MainAppWindow(QWidget):
         self.button6 = QPushButton("Show Invoice")
         self.button6.clicked.connect(self.open_show_invoice_window)
 
+        self.button7 = QPushButton("Compare Last Two Month Invoices")
+        self.button7.clicked.connect(self.open_compare_two_month_invoice_window)
+
         self.buttonX = QPushButton("Logout")
         self.buttonX.clicked.connect(self.logout)
 
@@ -577,6 +580,7 @@ class MainAppWindow(QWidget):
         layout.addWidget(self.button4)
         layout.addWidget(self.button5)
         layout.addWidget(self.button6)
+        layout.addWidget(self.button7) 
         layout.addWidget(self.buttonX)
 
         self.setLayout(layout)
@@ -617,6 +621,11 @@ class MainAppWindow(QWidget):
     def open_show_invoice_window(self):
         dialog = ShowInvoiceDialog(self.db_manager)
         dialog.exec_()
+
+    def open_compare_two_month_invoice_window(self):
+        dialog = CompareTwoMonthInvoiceDialog(self.db_manager, self.subscription_no)
+        dialog.exec_()
+
 
     def logout(self):
         QMessageBox.information(self, "Logout", "You have been logged out.")
@@ -994,6 +1003,59 @@ class ShowInvoiceDialog(QDialog):
             self.result_label.setText(details)
         else:
             self.result_label.setText("No data found for the given invoice number.")
+
+class CompareTwoMonthInvoiceDialog(QDialog):
+    def __init__(self, db_manager, subscription_no):
+        super().__init__()
+        self.db_manager = db_manager
+        self.subscription_no = subscription_no
+
+        self.setWindowTitle("Compare Last Two Months")
+        self.setGeometry(300, 300, 400, 200)
+        self.setWindowModality(Qt.ApplicationModal)
+
+        layout = QVBoxLayout()
+
+        # Fatura türü seçimi
+        self.invoice_type_combo = QComboBox()
+        self.invoice_type_combo.addItems(["Electricity", "Natural Gas", "Water"])
+        layout.addWidget(QLabel("Select Invoice Type:"))
+        layout.addWidget(self.invoice_type_combo)
+
+        # Butonlar
+        button_layout = QHBoxLayout()
+        self.compare_button = QPushButton("Compare")
+        self.compare_button.clicked.connect(self.compare_invoices)
+        button_layout.addWidget(self.compare_button)
+
+        self.cancel_button = QPushButton("Cancel")
+        self.cancel_button.clicked.connect(self.close)
+        button_layout.addWidget(self.cancel_button)
+
+        layout.addLayout(button_layout)
+        self.setLayout(layout)
+
+    def compare_invoices(self):
+        try:
+            selected_type = self.invoice_type_combo.currentText()
+
+            if not selected_type:
+                QMessageBox.warning(self, "Warning", "Please select an invoice type.")
+                return
+
+            # Veritabanından karşılaştırmayı yap
+            result, error = self.db_manager.compare_last_two_months(self.subscription_no, selected_type)
+            if error:
+                QMessageBox.critical(self, "Error", error)
+            elif result is None:
+                QMessageBox.information(self, "No Data", "No invoices found for the last two months.")
+            else:
+                QMessageBox.information(self, "Comparison Result", f"The difference in consumption: {result}")
+            
+            self.close()
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            QMessageBox.critical(self, "Critical Error", str(e))
 
 # admin panel giriş ekranı.
 class AdminPanelWindow(QWidget):

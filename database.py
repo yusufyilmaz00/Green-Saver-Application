@@ -388,3 +388,20 @@ class DatabaseManager:
             if conn:
                 conn.close()
 
+    def compare_last_two_months(self, subscriber_no, invoice_type):
+        conn = self.create_connection()
+        if not conn:
+            return None, "Database connection failed!"
+
+        try:
+            cursor = conn.cursor()
+            query = """
+                SELECT last_two_months_invoice(%s, %s);
+            """
+            cursor.execute(query, (subscriber_no, invoice_type))
+            result = cursor.fetchone()  # Sonuç döndür
+            return result[0] if result else None, None
+        except Exception as e:
+            return None, f"An error occurred: {e}"
+        finally:
+            self.close_connection()
