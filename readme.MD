@@ -1,4 +1,4 @@
-# **Veri Tabanı Projesi**
+# **Veri Tabanı Projesi - Version 2.0**
 
 ## **Proje Hakkında**
 Bu proje, etkili ve güvenilir bir veri tabanı sistemi oluşturmayı amaçlamaktadır. Proje kapsamında temel veri tabanı yönetimi işlevleri uygulanmış ve SQL sorguları ile işlemler gerçekleştirilmiştir.
