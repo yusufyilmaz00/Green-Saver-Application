@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QFormLayout, QLineEdit, QPushButton, QMessageBox, QVBoxLayout
 from database.operations import validate_login, get_user_info, get_subscriber_type
-from gui.main_app_window import MainAppWindow  # Import the main application window
-from gui.password_update_dialog import PasswordUpdateDialog  # Import password update dialog
+from gui.main_app.main_app_window import MainAppWindow  # Import the main application window
+from gui.auth.password_update_dialog import PasswordUpdateDialog  # Import password update dialog
 
 class LoginWindow(QWidget):
     def __init__(self):

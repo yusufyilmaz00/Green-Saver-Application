@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QPushButton, QMessageBox, QVBoxLayout, QHBoxLayout
-from gui.admin_panel_window import AdminPanelWindow  # Import the admin panel window
+from gui.admin.admin_panel_window import AdminPanelWindow  # Import the admin panel window
 
 class AdminLoginWindow(QWidget):
     def __init__(self):
