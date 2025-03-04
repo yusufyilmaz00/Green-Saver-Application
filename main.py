@@ -1,11 +1,6 @@
 import sys
-import os
-
-# Add the project root directory to Python path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from PyQt5.QtWidgets import QApplication
-from gui.main_window import MainWindow  # Ana pencereyi import et
+from gui.main_window import MainWindow
 
 def main():
     app = QApplication(sys.argv)
