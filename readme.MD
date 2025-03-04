@@ -1,75 +1,160 @@
-# **Veri Tabanı Projesi - Version 2.0**
+# 🏢 Green Saver Application
 
-## **Proje Hakkında**
-Bu proje, etkili ve güvenilir bir veri tabanı sistemi oluşturmayı amaçlamaktadır. Proje kapsamında temel veri tabanı yönetimi işlevleri uygulanmış ve SQL sorguları ile işlemler gerçekleştirilmiştir.
-
----
-
-## **Özellikler**
-- Tabloların oluşturulması ve düzenlenmesi.
-- Veri ekleme, güncelleme, silme işlemleri.
-- Referans bütünlüğü (Referential Integrity) kurallarının uygulanması.
-- SQL ile veri sorgulama ve filtreleme işlemleri.
-- Yerleşik SQL fonksiyonlarının kullanımı ile gelişmiş analiz.
-- Abonelik yönetimi (bireysel ve kurumsal aboneler).
-- Fatura oluşturma ve doğrulama.
-- Karbon emisyonu hesaplama.
-- Veri bütünlüğünü sağlayan tetikleyiciler.
-- Veri sorgulama için özel SQL fonksiyonları ve görünümler.
+Green Saver Application is a system that helps users manage their energy consumption and track their carbon footprint. This platform supports individual and corporate subscriptions and offers features such as billing, consumption analysis, and carbon emission calculations.
 
 ---
 
-## **Dosya Yapısı**
-- `greensaverdb-schema.sql`: Tabloların oluşturulması ve verilerin işlenmesi için kullanılan ana SQL dosyası.
-- `greensaverdb-insert.sql`: Çeşitli sorguların yer aldığı SQL dosyası.
-- `README.md`: Proje ile ilgili bilgilerin yer aldığı doküman.
-- `main.py`: PyQt5 ile oluşturulmuş olan GUI uygulaması.
-- `database.py`: Veritabanı bağlantısını sağlayan sınıf.
-- `gui.py`: GUI ile ilgili kodların yer aldığı dosya.   
+## 🎨 Key Features
+
+- 🟢 **Individual and Corporate Subscription**: Users can register as individual or corporate subscribers.
+- 💰 **Invoice Management**: Users can add, view, delete, or update their invoices.
+- 🌱 **Carbon Emission Calculation**: Calculates users' carbon footprint based on their energy consumption.
+- 📊 **Invoice Comparison**: Users can compare past invoices and analyze their consumption trends.
+- 📈 **Admin Panel**: Admins can list all subscribers and view the top spenders.
 
 ---
 
-## **Kullanım**
-1. SQL dosyalarını bir veri tabanı yönetim sistemine (ör. MySQL, PostgreSQL) yükleyin.
-2. `greensaverdb-schema.sql` dosyasını çalıştırarak temel tabloları oluşturun.
-3. `greensaverdb-insert.sql` dosyasını kullanarak veri üzerinde işlemler yapabilirsiniz.
-4. `main.py` dosyasını çalıştırarak uygulamayı başlatın.
+## 🌐 Modularity and Project Structure
+
+This project was developed using a **modular architecture**. Keeping each class and function in separate files provides the following key advantages:
+
+### 📝 Easy Maintenance and Scalability
+- Each function or component has a specific role, making the code easier to understand and develop.
+- New features can be added by updating only the relevant files without affecting other modules.
+
+### 🔄 Code Reusability
+- Allows writing **reusable code**. For example, functions in `operations.py` can be easily called by different GUI windows.
+- Similarly, `database/queries.py` centralizes SQL queries, making them **secure** and **more manageable**.
+
+### 🌍 Suitable for Team Collaboration
+- Enables multiple developers to work on different files simultaneously.
+- Team members can focus on **admin panel**, **subscription system**, or **database operations** independently.
+
+### 🎨 Cleaner and More Readable Code
+- A well-structured file organization helps new developers understand the project more easily.
+- Improves code readability and simplifies debugging.
+
+This approach makes the application **flexible**, **easy to maintain**, and **sustainable in the long term**.
+
+## 📂 Project Directory Structure
+
+```
+/database
+  ├── config.py          # Database configuration settings
+  ├── connection.py      # Database connection functions
+  ├── operations.py      # Database operations (CRUD functions)
+  └── queries.py         # SQL queries
+
+/gui
+  ├── /admin
+  │   ├── admin_panel_window.py         # Admin panel interface
+  │   ├── all_subscribers_dialog.py     # Window listing all subscribers
+  │   └── top_spenders_dialog.py        # Window displaying top spenders
+  │   
+  ├── /auth
+  │   ├── admin_login_window.py          # Admin login screen
+  │   ├── password_update_dialog.py      # Password update screen
+  │   └── user_login_window.py          # User login screen
+  │   
+  ├── /main_app
+  │   ├── add_invoice_dialog.py                 # Invoice addition screen
+  │   ├── carbon_emission_dialog.py            # Carbon emission calculation screen
+  │   ├── compare_all_time_invoices_dialog.py  # Compare past invoices
+  │   ├── compare_invoices_dialog.py           # Compare selected invoices
+  │   ├── delete_invoice_dialog.py             # Delete invoice screen
+  │   ├── main_app_window.py                   # Main application interface
+  │   ├── show_all_invoices_dialog.py          # Display all invoices
+  │   ├── show_invoice_dialog.py               # Display selected invoice
+  │   └── update_invoice_dialog.py             # Update invoice screen
+  │   
+  ├── /subscriptions
+  │   ├── corporate_window.py      # Corporate subscription screen
+  │   └── individual_window.py     # Individual subscription screen
+  │   
+  └── main_window.py  # Application startup screen
+
+.gitignore
+app_icon.png
+greensaverdb-insert.sql  # Sample data insertion SQL file
+greensaverdb-schema.sql  # Database schema file
+main.py  # Entry point of the application
+README.md
+```
+
 ---
 
-## **Gereksinimler**
-- Python 3.x
-- PyQt5
-- PostgreSQL
+## 💪 Installation and Usage
 
----
+1. **Clone the Repository:**
 
-## **Proje Durumu**
-Bu proje şu anda temel veri tabanı işlevlerini desteklemektedir. İleride daha gelişmiş özellikler eklenmesi planlanmaktadır.
+   ```
+   git clone https://github.com/yusufyilmaz00/Green-Saver-Application.git
+   cd Green-Saver-Application
+   ```
 
-### **Proje Kodlama Durumu**
-Aşağıdaki fonksiyonlar ve tetikleyiciler projede kullanılmaktadır. Tamamlananları işaretleyebilirsiniz:
+2. **Requirements:**
+   - Python 3.x
+   - PostgreSQL
+   - PyQt5
+   - psycopg2
 
-- [X] **`insert_individual_subscriber`**: Bireysel abone ekleme fonksiyonu.
-- [X] **`insert_corporate_subscriber`**: Kurumsal abone ekleme fonksiyonu.
-- [X] **`insert_invoice`**: Fatura ekleme fonksiyonu.
-- [X] **`invoice_collision_func`**: Aynı tarih ve türde fatura ekleme kontrolünü sql içinde yapan fonksiyon.
-- [X] **`invoice_collision_trig`**: Fatura çakışma kontrolü için sql içinde yapan tetikleyici.
-- [X] **`calculate_carbon_emission`**: Karbon emisyonu hesaplama fonksiyonu.
-- [ ] **`all_sub_view`**: Admin sayfasında Abonelerin birleştirilmiş görünümünü gösteren fonksiyon.
-- [X] **`trig_invoiceInsertControl`**: Abonelik kontrolü için tetikleyici fonksiyon.
-- [X] **`get_all_individualInvoices`**: Bireysel abonenin tüm faturalarını listeleme fonksiyonu.
-- [X] **`get_all_corporateInvoices`**: Kurumsal abonenin tüm faturalarını listeleme fonksiyonu.
-- [X] **`get_invoice`**: Abone numarasına göre fatura bilgilerini getirme fonksiyonu.
-- [X] **`update_password`**: Kullanıcı şifresini güncelleme fonksiyonu.
-- [X] **`delete_invoice`**: Fatura silme fonksiyonu.
-- [X] **`update_invoice`**: Fatura güncelleme fonksiyonu.
-- [X] **`get_top_spenders`**: Admin panelinde belirtilen eşik değerinden fazka fatura ödeyen aboneleri listeleme fonksiyonu.
----
+3. **Installing Dependencies:**
 
-## **Katkıda Bulunma**
-Katkılarından dolayı ekip arkadaşlarım Burakhan Saruhan ve Alihan Uludağ'a teşekkür ederim. Projemize katkıda bulunmak isterseniz lütfen bir "Pull Request" gönderin veya [e-posta adresinizi buraya ekleyin].
+   ```
+   pip install -r requirements.txt
+   ```
 
----
+4. **Setting Up the Database:** Run `greensaverdb-schema.sql` in PostgreSQL to create the necessary tables:
 
-## **Lisans**
-Bu proje MIT Lisansı ile lisanslanmıştır.
+   ```
+   psql -U postgres -d greensaverdb -f greensaverdb-schema.sql
+   ```
+
+   Then, insert sample data using:
+
+   ```
+   psql -U postgres -d greensaverdb -f greensaverdb-insert.sql
+   ```
+
+5. **Running the Application:**
+
+   ```
+   python main.py
+   ```
+
+1. **Requirements:**
+
+   - Python 3.x
+   - PostgreSQL
+   - PyQt5
+   - psycopg2
+
+2. **Installing Dependencies:**
+
+   ```
+   pip install -r requirements.txt
+   ```
+
+3. **Setting Up the Database:** Run `greensaverdb-schema.sql` in PostgreSQL to create the necessary tables:
+
+   ```
+   psql -U postgres -d greensaverdb -f greensaverdb-schema.sql
+   ```
+
+   Then, insert sample data using:
+
+   ```
+   psql -U postgres -d greensaverdb -f greensaverdb-insert.sql
+   ```
+
+4. **Running the Application:**
+
+   ```
+   python main.py
+   ```
+
+## 👥 Contributions
+
+The **first version** of the project was developed by Alihan Uludağ, Burakhan Saruhan, and Yusuf Yılmaz. The **second version** was updated by Yusuf Yılmaz.
+
+Developers interested in contributing can submit **pull requests (PR)** or create an **issue** for bug reports. We welcome all feedback and contributions!
