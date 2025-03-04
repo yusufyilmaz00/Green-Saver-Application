@@ -259,8 +259,6 @@ def get_invoice(invoice_no):
     finally:
         close_connection(conn)
 
-###
-
 # Recommendation messages dictionary
 recommendation_messages = {
     "high_usage": [
